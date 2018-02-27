@@ -1,0 +1,26 @@
+{
+  "name": "sagebuild",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "up": "node ./cloudformation-template/bin/launch.js",
+    "update": "node ./cloudformation-template/bin/update.js",
+    "down":"node ./cloudformation-template/bin/delete.js"
+  },
+  "repository": {
+    "type":"git",
+    "url":"https://git-codecommit.us-east-1.amazonaws.com/v1/repos/sagebuild"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.188.0",
+    "bluebird": "^3.5.1",
+    "cfn-response": "^1.0.1",
+    "chalk": "^2.3.1",
+    "ora": "^1.4.0",
+    "uglify-es": "github:mishoo/UglifyJS2#harmony"
+  }
+}

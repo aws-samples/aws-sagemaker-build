@@ -1,7 +1,23 @@
-## AWS Sagemaker Build
+# SageBuild
+code for aws blog post
 
-Creates a CloudFormation template that uses AWS StepFunctions to automate the building and training of Sagemaker custom models based on S3 and GitHub events
+## setup
 
-## License
+```shell
+npm install
+```
+create an s3 bucket. [instructions](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-get-location-example.html). open up config.json and set templateBucket to the name of your s3 bucket.
 
-This library is licensed under the Apache 2.0 License. 
+## Stack Management
+```shell
+npm run up #launches stack with default paramters
+```
+```shell
+npm run update #updates the launched stack
+```
+```shell
+npm run down #shuts down stack
+```
+
+
+template is written to /template/template.json
