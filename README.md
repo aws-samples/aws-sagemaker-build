@@ -1,8 +1,7 @@
-# SageBuild
-code for aws blog post
+# AWS SageMaker Build
+Creates a CloudFormation template that uses AWS StepFunctions to automate the building and training of Sagemaker custom models based on S3 and GitHub events
 
 ## setup
-
 ```shell
 npm install
 ```
@@ -19,5 +18,5 @@ npm run update #updates the launched stack
 npm run down #shuts down stack
 ```
 
+template is written to /cloudformation-template/build/template.json
 
-template is written to /template/template.json

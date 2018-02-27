@@ -6,11 +6,11 @@
   "scripts": {
     "up": "node ./cloudformation-template/bin/launch.js",
     "update": "node ./cloudformation-template/bin/update.js",
-    "down":"node ./cloudformation-template/bin/delete.js"
+    "down": "node ./cloudformation-template/bin/delete.js"
   },
   "repository": {
-    "type":"git",
-    "url":"https://git-codecommit.us-east-1.amazonaws.com/v1/repos/sagebuild"
+    "type": "git",
+    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/sagebuild"
   },
   "keywords": [],
   "author": "",
