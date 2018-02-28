@@ -68,7 +68,7 @@ module.exports=Object.assign(require('./setup'),{
               "Effect": "Allow",
               "Action": ["sagemaker:InvokeEndpoint"],
               "Resource":[{"Fn::Sub":
-                "arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:endpoint/${Variables.EndpointName}"}]
+                "arn:aws:sagemaker::${AWS::AccountId}:endpoint/${Variables.EndpointName}"}]
           },{
               "Effect": "Allow",
               "Action": ["lambda:UpdateFunctionCode"],
