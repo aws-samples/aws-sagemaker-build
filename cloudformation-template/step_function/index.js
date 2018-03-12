@@ -1,9 +1,11 @@
 var fs=require('fs')
 var Promise=require('bluebird')
-var stateMachine=require('./stateMachine')
 var _=require('lodash')
 
-module.exports=Object.assign(require('./lambdas'),require('./launch'),{
+module.exports=Object.assign(
+    require('./lambdas'),
+    require('./stateMachines').StateMachine,
+    require('./launch'),{
     "ModelClear":{
         "Type": "Custom::SageMakerModelClear",
         "DependsOn":["CFNLambdaPolicy","EndpointConfigClear"],
@@ -60,15 +62,7 @@ module.exports=Object.assign(require('./lambdas'),require('./launch'),{
             "Bucket":{"Ref":"DataBucket"}
         }
     },
-    StateMachine:{
-        "Type": "AWS::StepFunctions::StateMachine",
-        "Properties": {
-            "DefinitionString":{"Fn::Sub":JSON.stringify(
-                _.set(stateMachine,'StartAt','start')
-            )},
-            "RoleArn":{"Fn::GetAtt":["StepFunctionRole","Arn"]}
-        }
-    },
+    
     ModelRole:{
       "Type": "AWS::IAM::Role",
       "Properties": {

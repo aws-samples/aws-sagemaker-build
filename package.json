@@ -6,7 +6,8 @@
   "scripts": {
     "up": "node ./cloudformation-template/bin/launch.js",
     "update": "node ./cloudformation-template/bin/update.js",
-    "down": "node ./cloudformation-template/bin/delete.js"
+    "down": "node ./cloudformation-template/bin/delete.js",
+    "check":"node ./cloudformation-template/bin/check.js"
   },
   "repository": {
     "type": "git",

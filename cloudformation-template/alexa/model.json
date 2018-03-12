@@ -1,0 +1,66 @@
+{
+    "languageModel": {
+        "invocationName": "sagebuild",
+        "intents": [
+            {
+                "name": "AMAZON.CancelIntent",
+                "slots": [],
+                "samples": [
+                    "cancel",
+                    "cancel job",
+                    "cancel current job"
+                ]
+            },
+            {
+                "name": "AMAZON.HelpIntent",
+                "slots": [],
+                "samples": [
+                    "help",
+                    "how do i start a job",
+                    "how do i stop a job",
+                    "how do i get info on a job"
+                ]
+            },
+            {
+                "name": "AMAZON.StopIntent",
+                "slots": [],
+                "samples": [
+                    "stop",
+                    "stop build",
+                    "stop current build"
+                ]
+            },
+            {
+                "name": "Start",
+                "slots": [],
+                "samples": [
+                    "start",
+                    "start a new build",
+                    "launch a new build",
+                    "create a new build",
+                    "start a build"
+                ]
+            },
+            {
+                "name": "Info",
+                "slots": [],
+                "samples": [
+                    "info",
+                    "details",
+                    "give me details on the current job",
+                    "more details"
+                ]
+            },
+            {
+                "name": "Status",
+                "slots": [],
+                "samples": [
+                    "status",
+                    "what is the status of the job",
+                    "is my job finished"
+                ]
+            }
+        ],
+        "types": []
+    }
+}

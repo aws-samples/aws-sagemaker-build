@@ -1,5 +1,14 @@
+var stateMachines=require('./step_function/stateMachines')
+var machines=stateMachines.machines
+
 module.exports={
   "Parameters":{
+    "Type":{
+        "Type":"String",
+        "Default":"DockerTrainDeploy",
+        "AllowedValues":machines,
+        "Description":"The type of SageMaker build pipeline to create"
+    },
     "NoteBookInstanceType":{
         "Type":"String",
         "Default":"ml.t2.medium",
@@ -37,7 +46,9 @@ module.exports={
         "Description":"Comma seperated list of branchs in the code repository that trigger a build when changed"
     }
   },
-  "Conditions":{
+  "Conditions":Object.assign(
+    stateMachines.conditions,
+  {
     "LaunchNoteBookInstance":{"Fn::Not":[
         {"Fn::Equals":[{"Ref":"NoteBookInstanceType"},"USE_EXTERNAL"]}]
     },
@@ -65,8 +76,12 @@ module.exports={
             {"Fn::Equals":[{"Ref":"ExternalCodeCommitRepo"},"CREATE_REPO"]}
         ]}
     ]}
-  },
+  }),
   "Outputs":{
+    "AlexaLambdaArn":{
+        "Value":{"Fn::GetAtt":["AlexaLambda","Arn"]},
+        "Description":"Lambda function for creating an alexa skill"
+    },
     "NoteBookInstance":{
         "Value":{"Fn::If":[
             "LaunchNoteBookInstance",
@@ -172,6 +187,7 @@ module.exports={
     require('./codebuild'),
     require('./dashboard'),
     require('./SageMakerNotebook'),
+    require('./alexa')
   ),
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Automates the building and deployment of SageMaker custom models using StepFunctions and CodeBuild",
@@ -179,7 +195,7 @@ module.exports={
     "AWS::CloudFormation::Interface" : {
         "ParameterGroups":[{
             "Label":{"default":"General Configuration"},
-            "Parameters":["NoteBookInstanceType","AccessRoleArn"]
+            "Parameters":["Type","NoteBookInstanceType","AccessRoleArn"]
         },{
             "Label":{"default":"Data Bucket Configuration"},
             "Parameters":["ExternalDataBucket","ExternalLaunchTopic"]
@@ -194,7 +210,8 @@ module.exports={
             "BranchBuildTrigger":{"default":"Repository trigger branch"},
             "ExternalCodeCommitRepo":{"default":"AWS CodeCommit Repository"},
             "ExternalGithubRepo":{"default":"External Github Repository"},
-            "ExternalLaunchTopic":{"default":"Additional SNS Launch Topic"}
+            "ExternalLaunchTopic":{"default":"Additional SNS Launch Topic"},
+            "Type":{"default":"Type of Pipeline"}
         }
     }
   }
