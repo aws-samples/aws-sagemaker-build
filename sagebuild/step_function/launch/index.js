@@ -2,6 +2,25 @@ var fs=require('fs')
 
 
 module.exports={
+    "RollbackTopic":{
+        "Type" : "AWS::SNS::Topic",
+        "Properties" :{
+            DisplayName:{"Fn::Sub":"${AWS::StackName}-rollback"},
+            Subscription:[{
+                Endpoint:{"Fn::GetAtt":["RollbackLambda","Arn"]},
+                Protocol:"lambda"
+            }]
+        }
+    },
+    "RollbackLambdaSNSPolicy":{
+        "Type": "AWS::Lambda::Permission",
+        "Properties": {
+            "FunctionName": {"Fn::GetAtt":["RollbackLambda","Arn"]},
+            "Action": "lambda:InvokeFunction",
+            "Principal": "sns.amazonaws.com",
+            "SourceArn":{"Ref":"RollbackTopic"}
+        }
+    },
     "LaunchTopic":{
         "Type" : "AWS::SNS::Topic",
         "Properties" :{
@@ -102,6 +121,45 @@ module.exports={
         "Role": {"Fn::GetAtt": ["LaunchLambdaRole","Arn"]},
         "Runtime": "nodejs6.10",
         "Timeout": 60
+      }
+    },
+    "RollbackLambda":{
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+            "ZipFile":fs.readFileSync(__dirname+`/rollback.js`,'utf-8')
+        },
+        "Environment":{
+            Variables:{
+                ENDPOINT:{"Ref":"AWS::StackName"},
+            }
+        },
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": {"Fn::GetAtt": ["RollbackLambdaRole","Arn"]},
+        "Runtime": "nodejs6.10",
+        "Timeout": 60
+      }
+    },
+    "RollbackLambdaRole":{
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ]
       }
     },
     "LaunchLambdaRole":{

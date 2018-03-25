@@ -15,10 +15,10 @@ module.exports={
         "AllowedValues":["ml.t2.medium","ml.m4.xlarge","ml.p2.xlarge","USE_EXTERNAL"],
         "Description":"The SageMaker Notebook Instance type that will be created and pre-populated with a sagebuild tutorial notebook"
     },
-    "AccessRoleArn":{
+    "ExternalNotebook":{
         "Type":"String",
         "Default":"EMPTY",
-        "Description":"(Optional) An AWS IAM Role Arn for CloudFormation to attach a policy to give access to SageBuild resources. Use this to give an existing SageMaker Notebook Instance access to SageBuild."
+        "Description":"(Optional) A SageMaker Notebook instance to be pre-populated with a sagebuild tutorial notebook"
     },
     "ExternalDataBucket":{
         "Type":"String",
@@ -49,12 +49,20 @@ module.exports={
   "Conditions":Object.assign(
     stateMachines.conditions,
   {
-    "LaunchNoteBookInstance":{"Fn::Not":[
+    "InternalNoteBookInstance":{"Fn::Not":[
         {"Fn::Equals":[{"Ref":"NoteBookInstanceType"},"USE_EXTERNAL"]}]
     },
-    "AttachAccessPolicy":{"Fn::Not":[
-        {"Fn::Equals":[{"Ref":"AccessRoleArn"},"EMPTY"]}]
+    "ExternalNoteBookInstance":{"Fn::Not":[
+        {"Fn::Equals":[{"Ref":"ExternalNotebook"},"EMPTY"]}]
     },
+    "NoteBookInstance":{"Fn::Or":[
+        {"Fn::Not":[
+            {"Fn::Equals":[{"Ref":"NoteBookInstanceType"},"USE_EXTERNAL"]}]
+        },
+        {"Fn::Not":[
+            {"Fn::Equals":[{"Ref":"ExternalNotebook"},"EMPTY"]}]
+        }
+    ]},
     "CreateDataBucket":{"Fn::Equals":[{"Ref":"ExternalDataBucket"},"CREATE_BUCKET"]},
     "CreateRepo":{"Fn::And":[
         {"Fn::Equals":[{"Ref":"ExternalCodeCommitRepo"},"CREATE_REPO"]},
@@ -84,8 +92,8 @@ module.exports={
     },
     "NoteBookInstance":{
         "Value":{"Fn::If":[
-            "LaunchNoteBookInstance",
-            {"Fn::Sub":"https://console.aws.amazon.com/sagemaker/home?region=${AWS::Region}#/notebook-instances/${AWS::StackName}"},
+            "NoteBookInstance",
+            {"Fn::Sub":"https://console.aws.amazon.com/sagemaker/home?region=${AWS::Region}#/notebook-instances/${Notebook.Name}"},
             {"Ref":"AWS::NoValue"}
         ]},
         "Description":"AWS Console url of your sagemaker notebook instance, from here you can open the instance"
@@ -105,6 +113,10 @@ module.exports={
     "LaunchTopic":{
         "Value":{"Ref":"LaunchTopic"},
         "Description":"Topic that triggers a new build/train. Use this value to setup github webhook triggers."
+    },
+    "RollbackTopic":{
+        "Value":{"Ref":"RollbackTopic"},
+        "Description":"Topic that triggers a rollback fo the endpoint to the previous config"
     },
     "SageMakerEndpoint":{
         "Value":{"Fn::GetAtt":["Variables","EndpointName"]},
@@ -153,6 +165,18 @@ module.exports={
             "reason":"Cannot specify both CodeCommit and Github repo"
         }
     },
+    "Notebook":{
+        "Type": "Custom::Variables",
+        Condition:"NoteBookInstance",
+        "Properties": {
+            "ServiceToken": { "Fn::GetAtt" : ["VariableLambda", "Arn"] },
+            "Name":{"Fn::If":[
+                "InternalNoteBookInstance",
+                {"Ref":"AWS::StackName"},
+                {"Ref":"ExternalNotebook"}
+            ]}
+        }
+    },
     "Variables":{
         "Type": "Custom::Variables",
         "Properties": {
@@ -195,7 +219,7 @@ module.exports={
     "AWS::CloudFormation::Interface" : {
         "ParameterGroups":[{
             "Label":{"default":"General Configuration"},
-            "Parameters":["Type","NoteBookInstanceType","AccessRoleArn"]
+            "Parameters":["Type","NoteBookInstanceType","ExternalNotebook"]
         },{
             "Label":{"default":"Data Bucket Configuration"},
             "Parameters":["ExternalDataBucket","ExternalLaunchTopic"]
@@ -205,7 +229,7 @@ module.exports={
         }],
         "ParameterLabels":{
             "NoteBookInstanceType":{"default":"SageMaker Notebook Instance Type"},
-            "AccessRoleArn":{"default":"External Access Role Arn"},
+            "ExternalNotebook":{"default":"External SageMaker Notebookt to use"},
             "ExternalDataBucket":{"default":"Training Data Bucket"},
             "BranchBuildTrigger":{"default":"Repository trigger branch"},
             "ExternalCodeCommitRepo":{"default":"AWS CodeCommit Repository"},

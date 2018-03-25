@@ -5,42 +5,50 @@ var _=require('lodash')
 module.exports=Object.assign(require('./setup'),{
     "SageMakerNotebookInstance":{
         "Type": "Custom::SageMakerNotebookInstance",
-        Condition:"LaunchNoteBookInstance",
+        Condition:"InternalNoteBookInstance",
         "DependsOn":["CFNLambdaPolicy"],
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["SageMakerNotebookInstanceLambda", "Arn"] },
             InstanceType:"ml.t2.medium",
-            NotebookInstanceName:{"Ref":"AWS::StackName"},
-            RoleArn:{"Fn::GetAtt":["NotebookRole","Arn"]}
+            NotebookInstanceName:{"Fn::GetAtt":["Notebook","Name"]},
+            RoleArn:{"Fn::GetAtt":["InternalNotebookRole","Arn"]}
         }
     },
-    "NotebookRole":{
+    "InternalNotebookRole":{
       "Type": "AWS::IAM::Role",
-      Condition:"LaunchNoteBookInstance",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "sagemaker.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        },
-        "Path": "/",
-        "ManagedPolicyArns": [{"Ref":"NotebookPolicy"}]
-      }
+      Condition:"InternalNoteBookInstance",
+      "Properties":{
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "sagemaker.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            },
+            "Path": "/"
+          }
+    },
+    "ExternalNotebookRole":{
+        "Type": "Custom::Variables",
+        Condition:"ExternalNoteBookInstance",
+        "Properties": {
+            "ServiceToken": {"Fn::GetAtt" : ["SageMakerNotebookRoleLambda", "Arn"]},
+            "NotebookInstanceName":{"Fn::GetAtt":["Notebook","Name"]}
+        }
     },
     "NotebookPolicy":{
       "Type": "AWS::IAM::ManagedPolicy",
+      Condition:"NoteBookInstance",
       "Properties": {
         Roles:[{"Fn::If":[
-            "AttachAccessPolicy",
-            {"Ref":"AccessRoleArn"},
-            {"Ref":"AWS::NoValue"}
+            "InternalNoteBookInstance",
+            {"Ref":"InternalNotebookRole"},
+            {"Ref":"ExternalNotebookRole"}
         ]}],
         "PolicyDocument": {
           "Version": "2012-10-17",

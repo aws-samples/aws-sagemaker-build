@@ -8,7 +8,12 @@ exports.handler=(event,context,cb)=>{
     var args=Object.assign({
         EndpointConfigName:event.name
     },event.params.endpoint.args) 
-
+    
+    if(event.model.old[1]){
+        args.Tags=[{
+            Key:"previous",Value:event.model.old[1]
+        }]
+    }
     sagemaker.createEndpointConfig(args).promise()
     .then(result=>{
         event.params.endpoint.arn=result.EndpointConfigArn

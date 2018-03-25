@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "up": "node ./cloudformation-template/bin/launch.js",
-    "update": "node ./cloudformation-template/bin/update.js",
-    "down": "node ./cloudformation-template/bin/delete.js",
-    "check":"node ./cloudformation-template/bin/check.js"
+    "up": "node ./sagebuild/bin/launch.js",
+    "update": "node ./sagebuild/bin/update.js",
+    "down": "node ./sagebuild/bin/delete.js",
+    "check":"node ./sagebuild/bin/check.js"
   },
   "repository": {
     "type": "git",
