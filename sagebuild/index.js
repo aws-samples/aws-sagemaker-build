@@ -25,6 +25,11 @@ module.exports={
         "Default":"CREATE_BUCKET",
         "Description":"(Optional) S3 Bucket to use for training data"
     },
+    "ExternalCodeBucket":{
+        "Type":"String",
+        "Default":"EMPTY",
+        "Description":"(Optional) S3 Bucket to get container build zips"
+    },
     "ExternalLaunchTopic":{
         "Type":"String",
         "Default":"EMPTY",
@@ -70,6 +75,9 @@ module.exports={
     ]},
     "CreateRepoTrigger":{"Fn::Not":[
         {"Fn::Equals":[{"Ref":"ExternalGithubRepo"},"USE_CODECOMMIT_REPO"]}
+    ]},
+    "UseCodeBucket":{"Fn::Not":[
+        {"Fn::Equals":[{"Ref":"ExternalCodeBucket"},"EMPTY"]}
     ]},
     "IsCodeCommitRepo":{"Fn::Equals":[{"Ref":"ExternalGithubRepo"},"USE_CODECOMMIT_REPO"]},
     "SubscribeToExternalTopic":{"Fn::Not":[{"Fn::Equals":[

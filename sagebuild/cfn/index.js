@@ -46,8 +46,7 @@ module.exports=Object.assign(
                 "s3:*"
               ],
               "Resource":[
-                {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}*"},
-                {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}*"}
+                {"Fn::Sub":"arn:aws:s3:::${DataBucket}*"}
               ]
             },
             {

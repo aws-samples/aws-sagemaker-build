@@ -81,20 +81,28 @@ module.exports={
             },
             "Name":{"Fn::Sub":"${AWS::StackName}-Image-build"},
             ServiceRole:{"Ref":"ServiceRole"},
-            Source:{
-                Type:{"Fn::If":[
-                    "IsCodeCommitRepo",
-                    "CODECOMMIT",
-                    "GITHUB"
-                ]},
-                Location:{"Fn::GetAtt":["Variables","RepoUrl"]},
-                BuildSpec:fs.readFileSync(`${__dirname}/buildspec.yml`,'utf-8'),
-                Auth:{"Fn::If":[
-                    "IsCodeCommitRepo",
-                    {"Ref":"AWS::NoValue"},
-                    {"Type":"OAUTH"}
-                ]}
-            }
+            Source:{"Fn::If":[
+                "UseCodeBucket",
+                {
+                    Type:"S3",
+                    Location:{"Ref":"ExternalCodeBucket"},
+                    BuildSpec:fs.readFileSync(`${__dirname}/buildspec.yml`,'utf-8')
+                },
+                {
+                    Type:{"Fn::If":[
+                        "IsCodeCommitRepo",
+                        "CODECOMMIT",
+                        "GITHUB"
+                    ]},
+                    Location:{"Fn::GetAtt":["Variables","RepoUrl"]},
+                    BuildSpec:fs.readFileSync(`${__dirname}/buildspec.yml`,'utf-8'),
+                    Auth:{"Fn::If":[
+                        "IsCodeCommitRepo",
+                        {"Ref":"AWS::NoValue"},
+                        {"Type":"OAUTH"}
+                    ]}
+                }
+            ]}
         }
     },
     "ClearTrainingImage":{
