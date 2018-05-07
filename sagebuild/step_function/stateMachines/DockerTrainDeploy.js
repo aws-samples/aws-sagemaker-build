@@ -51,7 +51,7 @@ module.exports={
         "getTrainingConfig":{
             Type:"Task",
             InputPath:"$",
-            Resource:"${StepLambdaGetTrainingConfig.Arn}",
+            Resource:"${LambdaVariables.TrainingConfig}",
             ResultPath:"$.params.training.args",
             Next:"startTraining"
         },
@@ -100,7 +100,7 @@ module.exports={
         "getEndpointConfig":{
             Type:"Task",
             InputPath:"$",
-            Resource:"${StepLambdaGetEndpointConfig.Arn}",
+            Resource:"${LambdaVariables.EndpointConfig}",
             ResultPath:"$.params.endpoint.args",
             Next:"createEndpointConfig"
         },
@@ -174,7 +174,7 @@ function build(name){
             },
             "buildImagePath":{
                 Type:"Task",
-                Resource:`\${StepLambdaGet${name}DockerfilePath.Arn}`,
+                Resource:`\${LambdaVariables.${name}DockerfilePath}`,
                 ResultPath:`$.dockerfile_path`,
                 Next:`buildImage${name}`
             },

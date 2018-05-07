@@ -90,13 +90,13 @@ module.exports=Object.assign(require('./setup'),{
               "Effect": "Allow",
               "Action": ["s3:*"],
               "Resource":[
-                {"Fn::Sub":"arn:aws:s3:::${DataBucket}/*"},
-                {"Fn::Sub":"arn:aws:s3:::${DataBucket}"}
+                {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
+                {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"}
               ]
           },{
               "Effect": "Deny",
               "Action": ["s3:DeleteBucket*"],
-              "Resource":[{"Fn::Sub":"arn:aws:s3:::${DataBucket}"}]
+              "Resource":[{"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"}]
           },{
               "Effect": "Allow",
               "Action": ["sns:Subscribe",

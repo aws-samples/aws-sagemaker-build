@@ -49,48 +49,49 @@ module.exports={
         "Type":"CommaDelimitedList",
         "Default":"master",
         "Description":"Comma seperated list of branchs in the code repository that trigger a build when changed"
+    },
+    "EndpointConfigLambda":{
+        "Type":"String",
+        "Default":"EMPTY"
+    },
+    "InferenceDockerfilePathLambda":{
+        "Type":"String",
+        "Default":"EMPTY"
+    },
+    "TrainingDockerfilePathLambda":{
+        "Type":"String",
+        "Default":"EMPTY"
+    },
+    "TrainingConfigLambda":{
+        "Type":"String",
+        "Default":"EMPTY"
     }
   },
   "Conditions":Object.assign(
     stateMachines.conditions,
   {
-    "InternalNoteBookInstance":{"Fn::Not":[
-        {"Fn::Equals":[{"Ref":"NoteBookInstanceType"},"USE_EXTERNAL"]}]
-    },
-    "ExternalNoteBookInstance":{"Fn::Not":[
-        {"Fn::Equals":[{"Ref":"ExternalNotebook"},"EMPTY"]}]
-    },
+    "InternalNoteBookInstance":notEqual("NoteBookInstanceType","USE_EXTERNAL"),
+    "ExternalNoteBookInstance":notEmpty("ExternalNotebook"),
+    "ExternalEndpointConfigLambda":notEmpty("EndpointConfigLambda"),
+    "ExternalInferenceDockerfilePathLambda":notEmpty("InferenceDockerfilePathLambda"),
+    "ExternalTrainingDockerfilePathLambda":notEmpty("TrainingDockerfilePathLambda"),
+    "ExternalTrainingConfigLambda":notEmpty("TrainingConfigLambda"),
     "NoteBookInstance":{"Fn::Or":[
-        {"Fn::Not":[
-            {"Fn::Equals":[{"Ref":"NoteBookInstanceType"},"USE_EXTERNAL"]}]
-        },
-        {"Fn::Not":[
-            {"Fn::Equals":[{"Ref":"ExternalNotebook"},"EMPTY"]}]
-        }
+        notEqual("NoteBookInstanceType","USE_EXTERNAL"),
+        notEmpty("ExternalNotebook")
     ]},
-    "CreateDataBucket":{"Fn::Equals":[{"Ref":"ExternalDataBucket"},"CREATE_BUCKET"]},
+    "CreateDataBucket":equal("ExternalDataBucket","CREATE_BUCKET"),
     "CreateRepo":{"Fn::And":[
-        {"Fn::Equals":[{"Ref":"ExternalCodeCommitRepo"},"CREATE_REPO"]},
-        {"Fn::Equals":[{"Ref":"ExternalGithubRepo"},"USE_CODECOMMIT_REPO"]}
+        equal("ExternalCodeCommitRepo","CREATE_REPO"),
+        equal("ExternalGithubRepo","USE_CODECOMMIT_REPO")
     ]},
-    "CreateRepoTrigger":{"Fn::Not":[
-        {"Fn::Equals":[{"Ref":"ExternalGithubRepo"},"USE_CODECOMMIT_REPO"]}
-    ]},
-    "UseCodeBucket":{"Fn::Not":[
-        {"Fn::Equals":[{"Ref":"ExternalCodeBucket"},"EMPTY"]}
-    ]},
-    "IsCodeCommitRepo":{"Fn::Equals":[{"Ref":"ExternalGithubRepo"},"USE_CODECOMMIT_REPO"]},
-    "SubscribeToExternalTopic":{"Fn::Not":[{"Fn::Equals":[
-        {"Ref":"ExternalLaunchTopic"},
-        "EMPTY"
-    ]}]},
+    "CreateRepoTrigger":notEqual("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
+    "UseCodeBucket":notEmpty("ExternalCodeBucket"),
+    "IsCodeCommitRepo":equal("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
+    "SubscribeToExternalTopic":notEqual("ExternalLaunchTopic","EMPTY"),
     "InvalidConfiguration":{"Fn::And":[
-        {"Fn::Not":[
-            {"Fn::Equals":[{"Ref":"ExternalGithubRepo"},"USE_CODECOMMIT_REPO"]}
-        ]},
-        {"Fn::Not":[    
-            {"Fn::Equals":[{"Ref":"ExternalCodeCommitRepo"},"CREATE_REPO"]}
-        ]}
+        notEqual("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
+        notEqual("ExternalCodeCommitRepo","CREATE_REPO")
     ]}
   }),
   "Outputs":{
@@ -102,7 +103,7 @@ module.exports={
         "Value":{"Fn::If":[
             "NoteBookInstance",
             {"Fn::Sub":"https://console.aws.amazon.com/sagemaker/home?region=${AWS::Region}#/notebook-instances/${Notebook.Name}"},
-            {"Ref":"AWS::NoValue"}
+            "EMPTY" 
         ]},
         "Description":"AWS Console url of your sagemaker notebook instance, from here you can open the instance"
     },
@@ -139,19 +140,19 @@ module.exports={
         "Description":"S3 Bucket to put data for training in, will automaticaly trigger a new build"
     },
     "TrainingConfigLambda":{
-        "Value":{"Ref":"StepLambdaGetTrainingConfig"},
+        "Value":{"Fn::Sub":"${LambdaVariables.TrainingConfig}"},
         "Description":"Lambda function that returns the Training Job Config"
     },
     "EndpointConfigLambda":{
-        "Value":{"Ref":"StepLambdaGetEndpointConfig"},
+        "Value":{"Fn::Sub":"${LambdaVariables.EndpointConfig}"},
         "Description":"Lambda function that returns the Endpoint Config"
     },
     "TrainingDockerfilePathLambda":{
-        "Value":{"Ref":"StepLambdaGetTrainingDockerfilePath"},
+        "Value":{"Fn::Sub":"${LambdaVariables.TrainingDockerfilePath}"},
         "Description":"Lambda function that returns the path of the Training Dockerfile in the code repo"
     },
     "InferenceDockerfilePathLambda":{
-        "Value":{"Ref":"StepLambdaGetInferenceDockerfilePath"},
+        "Value":{"Fn::Sub":"${LambdaVariables.InferenceDockerfilePath}"},
         "Description":"Lambda function that returns the path of the Inference Dockerfile in the code repo"
     },
     "RepoUrl":{
@@ -182,6 +183,32 @@ module.exports={
                 "InternalNoteBookInstance",
                 {"Ref":"AWS::StackName"},
                 {"Ref":"ExternalNotebook"}
+            ]}
+        }
+    },
+    "LambdaVariables":{
+        "Type": "Custom::Variables",
+        "Properties": {
+            "ServiceToken": { "Fn::GetAtt" : ["VariableLambda", "Arn"] },
+            "EndpointConfig":{"Fn::If":[
+                "ExternalEndpointConfigLambda",
+                {"Ref":"EndpointConfigLambda"},
+                {"Fn::GetAtt":["StepLambdaGetEndpointConfig","Arn"]},
+            ]},
+            "TrainingConfig":{"Fn::If":[
+                "ExternalTrainingConfigLambda",
+                {"Ref":"TrainingConfigLambda"},
+                {"Fn::GetAtt":["StepLambdaGetTrainingConfig","Arn"]},
+            ]},
+            "InferenceDockerfilePath":{"Fn::If":[
+                "ExternalInferenceDockerfilePathLambda",
+                {"Ref":"InferenceDockerfilePathLambda"},
+                {"Fn::GetAtt":["StepLambdaGetInferenceDockerfilePath","Arn"]},
+            ]},
+            "TrainingDockerfilePath":{"Fn::If":[
+                "ExternalTrainingDockerfilePathLambda",
+                {"Ref":"TrainingDockerfilePathLambda"},
+                {"Fn::GetAtt":["StepLambdaGetTrainingDockerfilePath","Arn"]},
             ]}
         }
     },
@@ -247,4 +274,19 @@ module.exports={
         }
     }
   }
+}
+
+
+function notEmpty(param){
+    return notEqual(param,"EMPTY")
+}
+
+function notEqual(param,value){
+    return {"Fn::Not":[
+        {"Fn::Equals":[{"Ref":param},value]}]
+    }
+}
+
+function equal(param,value){
+    return {"Fn::Equals":[{"Ref":param},value]}
 }

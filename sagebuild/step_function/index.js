@@ -59,7 +59,7 @@ module.exports=Object.assign(
         "DependsOn":["CFNLambdaPolicy"],
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["S3ClearLambda", "Arn"] },
-            "Bucket":{"Ref":"DataBucket"}
+            "Bucket":{"Fn::GetAtt":["Variables","DataBucket"]}
         }
     },
     
