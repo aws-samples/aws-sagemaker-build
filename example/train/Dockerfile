@@ -6,12 +6,14 @@ FROM ubuntu:16.04
 
 MAINTAINER Amazon AI <sage-learner@amazon.com>
 
-
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
+RUN apt-get -y update && apt-get install -y \
          wget \
          python \
          nginx \
          ca-certificates \
+         build-essential \
+         python-dev \
+         python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Here we get all python packages.
