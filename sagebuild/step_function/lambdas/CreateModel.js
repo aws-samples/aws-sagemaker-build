@@ -5,18 +5,7 @@ var sagemaker=new aws.SageMaker()
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     event.model.name=event.name
-    sagemaker.createModel({
-        ExecutionRoleArn:event.model.role,
-        ModelName:event.model.name,
-        PrimaryContainer:{
-            Image:event.images.inference,
-            ModelDataUrl:event.params.training.args.ModelArtifacts.S3ModelArtifacts
-        },
-        Tags:[{
-            Key:"BuildStack",
-            Value:event.StackName
-        }]
-    }).promise()
+    sagemaker.createModel(event.params.model.args).promise()
     .then(result=>{
         event.model.arn=result.ModelArn
         return sagemaker.listModels({

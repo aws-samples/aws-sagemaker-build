@@ -82,7 +82,7 @@ module.exports={
             },{
                 Variable:`$.params.training.args.TrainingJobStatus`,
                 StringEquals:"Completed",
-                Next:`createModel` 
+                Next:`getModelConfig` 
             }],
             Default:`trainingFail`
         },
@@ -90,6 +90,13 @@ module.exports={
             Type:"Task",
             Resource:"${StepLambdaNotificationFail.Arn}",
             Next:"Fail"
+        },
+        "getModelConfig":{
+            Type:"Task",
+            InputPath:"$",
+            Resource:"${LambdaVariables.ModelConfig}",
+            ResultPath:"$.params.model.args",
+            Next:"createModel"
         },
         "createModel":{
             Type:"Task",

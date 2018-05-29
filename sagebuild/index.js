@@ -65,6 +65,10 @@ module.exports={
     "TrainingConfigLambda":{
         "Type":"String",
         "Default":"EMPTY"
+    },
+    "ModelConfigLambda":{
+        "Type":"String",
+        "Default":"EMPTY"
     }
   },
   "Conditions":Object.assign(
@@ -76,6 +80,7 @@ module.exports={
     "ExternalInferenceDockerfilePathLambda":notEmpty("InferenceDockerfilePathLambda"),
     "ExternalTrainingDockerfilePathLambda":notEmpty("TrainingDockerfilePathLambda"),
     "ExternalTrainingConfigLambda":notEmpty("TrainingConfigLambda"),
+    "ExternalModelConfigLambda":notEmpty("ModelConfigLambda"),
     "NoteBookInstance":{"Fn::Or":[
         notEqual("NoteBookInstanceType","USE_EXTERNAL"),
         notEmpty("ExternalNotebook")
@@ -95,6 +100,12 @@ module.exports={
     ]}
   }),
   "Outputs":{
+    "TrainingRoleArn":{
+        "Value":{"Fn::GetAtt":["TrainingRole","Arn"]}
+    },
+    "TrainingRole":{
+        "Value":{"Ref":"TrainingRole"}
+    },
     "AlexaLambdaArn":{
         "Value":{"Fn::GetAtt":["AlexaLambda","Arn"]},
         "Description":"Lambda function for creating an alexa skill"
@@ -103,6 +114,14 @@ module.exports={
         "Value":{"Fn::If":[
             "NoteBookInstance",
             {"Fn::Sub":"https://console.aws.amazon.com/sagemaker/home?region=${AWS::Region}#/notebook-instances/${Notebook.Name}"},
+            "EMPTY" 
+        ]},
+        "Description":"AWS Console url of your sagemaker notebook instance, from here you can open the instance"
+    },
+    "NoteBookInstanceName":{
+        "Value":{"Fn::If":[
+            "NoteBookInstance",
+            {"Fn::Sub":"${Notebook.Name}"},
             "EMPTY" 
         ]},
         "Description":"AWS Console url of your sagemaker notebook instance, from here you can open the instance"
@@ -150,6 +169,10 @@ module.exports={
     "TrainingDockerfilePathLambda":{
         "Value":{"Fn::Sub":"${LambdaVariables.TrainingDockerfilePath}"},
         "Description":"Lambda function that returns the path of the Training Dockerfile in the code repo"
+    },
+    "ModelConfigLambda":{
+        "Value":{"Fn::Sub":"${LambdaVariables.ModelConfig}"},
+        "Description":"Lambda function that returns Model Configuration"
     },
     "InferenceDockerfilePathLambda":{
         "Value":{"Fn::Sub":"${LambdaVariables.InferenceDockerfilePath}"},
@@ -199,6 +222,11 @@ module.exports={
                 "ExternalTrainingConfigLambda",
                 {"Ref":"TrainingConfigLambda"},
                 {"Fn::GetAtt":["StepLambdaGetTrainingConfig","Arn"]},
+            ]},
+            "ModelConfig":{"Fn::If":[
+                "ExternalModelConfigLambda",
+                {"Ref":"ModelConfigLambda"},
+                {"Fn::GetAtt":["StepLambdaGetModelConfig","Arn"]},
             ]},
             "InferenceDockerfilePath":{"Fn::If":[
                 "ExternalInferenceDockerfilePathLambda",
