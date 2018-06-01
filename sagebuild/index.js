@@ -106,6 +106,9 @@ module.exports={
     "TrainingRole":{
         "Value":{"Ref":"TrainingRole"}
     },
+    "ModelRole":{
+        "Value":{"Ref":"ModelRole"}
+    },
     "AlexaLambdaArn":{
         "Value":{"Fn::GetAtt":["AlexaLambda","Arn"]},
         "Description":"Lambda function for creating an alexa skill"

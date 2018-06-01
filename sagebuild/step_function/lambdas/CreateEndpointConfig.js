@@ -9,9 +9,9 @@ exports.handler=(event,context,cb)=>{
         EndpointConfigName:event.name
     },event.params.endpoint.args) 
     
-    if(event.model.old[1]){
+    if(event.params.model.args.old[1]){
         args.Tags=[{
-            Key:"previous",Value:event.model.old[1]
+            Key:"previous",Value:event.params.model.args.old[1]
         }]
     }
     sagemaker.createEndpointConfig(args).promise()

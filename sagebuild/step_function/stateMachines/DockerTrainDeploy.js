@@ -101,7 +101,7 @@ module.exports={
         "createModel":{
             Type:"Task",
             Resource:"${StepLambdaCreateModel.Arn}",
-            ResultPath:"$.model",
+            ResultPath:"$.params.model.args",
             Next:"getEndpointConfig"
         },
         "getEndpointConfig":{

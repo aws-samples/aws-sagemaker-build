@@ -4,7 +4,6 @@ var sagemaker=new aws.SageMaker()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    event.model.name=event.name
     sagemaker.createModel(event.params.model.args).promise()
     .then(result=>{
         event.model.arn=result.ModelArn

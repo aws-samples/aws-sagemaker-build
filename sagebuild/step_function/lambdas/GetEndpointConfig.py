@@ -6,7 +6,7 @@ def handler(event,context):
       "ProductionVariants": [{
           "InitialInstanceCount": 1, 
           "InstanceType": "ml.t2.medium",
-          "ModelName":event["model"]["name"], 
+          "ModelName":event["name"], 
           "VariantName":"prod", 
         }]
     } 
