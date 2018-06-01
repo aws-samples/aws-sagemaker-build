@@ -10,7 +10,8 @@ exports.handler=(event,context,callback)=>{
         ModelName:event.name,
         PrimaryContainer:{
             Image:event.images.inference,
-            ModelDataUrl:event.params.training.args.ModelArtifacts.S3ModelArtifacts
+            ModelDataUrl:event.params.training.args.ModelArtifacts.S3ModelArtifacts,
+            Environment:JSON.parse(process.env.MODELHOSTINGENVIRONMENT)
         },
         Tags:[{
             Key:"BuildStack",

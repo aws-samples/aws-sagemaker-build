@@ -1,11 +1,11 @@
 import json
-
+import os
 def handler(event,context):
     print(json.dumps(event,indent=2))
     return {
       "AlgorithmSpecification": { 
         "TrainingImage":event["images"]["train"], 
-        "TrainingInputMode": "File"
+        "TrainingInputMode":os.environ["INPUTMODE"]
       },
       "InputDataConfig": [ 
         {
@@ -25,15 +25,15 @@ def handler(event,context):
         'S3OutputPath':f"s3://{event['Buckets']['Artifact']}", 
       },
       "ResourceConfig": { 
-        "InstanceCount": 1, 
-        "InstanceType": "ml.m4.xlarge" , 
-        "VolumeSizeInGB": 1, 
+        "InstanceCount": os.environ["TRAINGINSTANCECOUNT"], 
+        "InstanceType": os.environ["TRAININSTANCETYPE"], 
+        "VolumeSizeInGB": int(os.environ["TRAINVOLUMESIZE"]), 
       },
       "RoleArn":event["params"]["training"]["role"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds": 600
+        "MaxRuntimeInSeconds":parseInt(os.environ["TRAINMAXRUN"])
       },
       "TrainingJobName":event["name"], 
-      "HyperParameters": {},
+      "HyperParameters":JSON.parse(os.environ["HyperParameters"]),
       "Tags": []
     }

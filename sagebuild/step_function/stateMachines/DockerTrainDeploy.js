@@ -8,12 +8,38 @@ module.exports={
     "States": {
         "start":{
             Type:"Pass",
-            Next:"buildImages"
+            Next:"IfBuild"
+        },
+        "IfBuild":{
+            Type:"Choice",
+            Choices:[{
+                Variable:`$.build`,
+                StringEquals:"true",
+                Next:`setUpTrain` 
+            },{
+                Variable:`$.build`,
+                StringEquals:"false",
+                Next:`IfTrain` 
+            }],
+            Default:`buildImages`
         },
         "buildImages":{
             Type: "Parallel",
             Branches:[build('Training'),build('Inference')],
-            Next:"setUpTrain"
+            Next:"IfTrain"
+        },
+        "IfTrain":{
+            Type:"Choice",
+            Choices:[{
+                Variable:`$.train`,
+                StringEquals:"true",
+                Next:`setUpTrain` 
+            },{
+                Variable:`$.train`,
+                StringEquals:"false",
+                Next:`setTime` 
+            }],
+            Default:`setUpTrain`
         },
         "setUpTrain":{
             Type:"Pass",

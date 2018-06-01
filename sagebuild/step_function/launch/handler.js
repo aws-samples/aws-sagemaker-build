@@ -10,9 +10,50 @@ exports.handler=function(event,context,callback){
     }).promise()
     .then(result=>{
         if(result.executions.length===0){
+            var message=JSON.parse(event.Records[0].Sns.Message)
+            if(message.Records){  
+                var record=message.Records[0]
+                if(record.codecommit){
+                    var source="aws:codecommit"
+                }else if(record.s3){
+                    var source=record.eventSource
+                }else{
+                    var source=custom
+                }
+            }else{
+                var source="custom" 
+            }
+            
+            switch(source){
+                case "custom":
+                    var input=message
+                    break;
+                case "aws:s3":
+                    var bucket=record.s3.bucket.name
+                    if(bucket===process.env.DATA_BUCKET){
+                        var input={
+                            train:true
+                        }
+                    }else if(bucket===process.env.CODE_BUCKET){
+                        var input={
+                            build:true
+                            train:true
+                        }
+                    }else{
+                        var input=message
+                    }
+                    break;
+                case "aws:codecommit":
+                    var input={
+                        train:true,
+                        build:true
+                    }
+                    break;
+            }
             return stepfunctions.startExecution({
                 stateMachineArn:process.env.STATE_MACHINE,
-                name:`SNS-${event.Records[0].Sns.MessageId}`
+                name:`SNS-${event.Records[0].Sns.MessageId}`,
+                input:input
             }).promise()
         }
     })
