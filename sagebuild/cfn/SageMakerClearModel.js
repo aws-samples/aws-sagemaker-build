@@ -35,6 +35,13 @@ exports.handler=function(event,context,callback){
                     InvocationType: "Event", 
                     Payload:JSON.stringify(event), 
                 }).promise())
+                .catch(function(err){
+                    if(err.code==="ThrottlingException"){
+                        setTimeout(()=>next(index),1000)
+                    }else{
+                        rej(err) 
+                    }
+                })
             }else{
                 response.send(event, context, response.SUCCESS)
             }
