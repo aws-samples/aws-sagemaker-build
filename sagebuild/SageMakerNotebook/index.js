@@ -4,11 +4,9 @@ var _=require('lodash')
 
 module.exports=Object.assign(require('./setup'),{
     "SageMakerNotebookInstance":{
-        "Type": "Custom::SageMakerNotebookInstance",
+        "Type": "AWS::SageMaker::NotebookInstance",
         Condition:"InternalNoteBookInstance",
-        "DependsOn":["CFNLambdaPolicy"],
         "Properties": {
-            "ServiceToken": { "Fn::GetAtt" : ["SageMakerNotebookInstanceLambda", "Arn"] },
             InstanceType:"ml.t2.medium",
             NotebookInstanceName:{"Fn::GetAtt":["Notebook","Name"]},
             RoleArn:{"Fn::GetAtt":["InternalNotebookRole","Arn"]}

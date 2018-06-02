@@ -10,10 +10,12 @@ var bucket=require('../../config').templateBucket
 if(require.main === module){
     run()
 }
+
 module.exports=run
 async function run(){
-    var template=JSON.stringify(require('../'))
-
+    var obj=require('../')
+    var template=JSON.stringify(obj)
+    
     await s3.putObject({
         Bucket:bucket,
         Key:"sagebuild.json",
@@ -25,7 +27,7 @@ async function run(){
     }).promise()
 
     console.log(result)
+    console.log(`Resources: ${Object.keys(obj.Resources).length}`)
     fs.writeFileSync(`${__dirname}/../build/template.json`,JSON.stringify(require('../'),null,2))
-    fs.writeFileSync(`${__dirname}/../build/template.min.json`,JSON.stringify(require('../')))
-    return template
+    return JSON.stringify(obj,null,2)
 }

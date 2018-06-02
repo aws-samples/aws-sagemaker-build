@@ -7,12 +7,12 @@ var configs=fs.readdirSync(__dirname)
 
 var config_types=fs.readdirSync(`${__dirname}/custom/`)
     .map(x=>x.split('.')[0])
-
-var params=_.fromPairs(Object.keys(require('../../../info/parameters'))
+var params=require('../../../info/parameters')
+var params=_.fromPairs(Object.keys(params)
+    .filter(x=>params[x].Type!=="CommaDelimitedList")
     .map(x=>[x.toUpperCase(),{Ref:x}]))
 
 module.exports=_.fromPairs(config_types.map(lambda))
-
 function lambda(name){
     var info=getInfo(name)
     return [`StepLambdaGet${name.split('.')[0]}`,{

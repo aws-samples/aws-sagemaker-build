@@ -1,5 +1,6 @@
 {
     "region":"us-east-1",
     "profile":"default",
-    "templateBucket":"jmc-assets"
+    "templateBucket":"jmc-assets",
+    "parameters":{}
 }

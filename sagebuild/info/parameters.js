@@ -67,7 +67,7 @@ module.exports={
             "ml.c5.18xlarge"
         ],
         "Description":"Type of EC2 instance to use for training, for example, 'ml.c4.xlarge'."
-    }
+    },
     TrainInstanceCount:{
         "Type":"String",
         "Default":"1",
@@ -112,7 +112,7 @@ module.exports={
         "Description":"Path (absolute or relative) to a directory with any other training source code dependencies aside from the entry point file. Structure within this directory will be preserved when training on SageMaker."
     },
     PyVersion:{
-        "Type":"number",
+        "Type":"String",
         "Default":"py3",
         "AllowedValues":["py2","py3"],
         "Description":"Python version you want to use for executing your model training code."
@@ -125,7 +125,7 @@ module.exports={
     },
     TrainMaxRun:{
         "Type":"Number",
-        "Default":"NONE",
+        "Default":"4",
         "Description":"Timeout in hours for training, after which Amazon SageMaker terminates the job regardless of its current status."
     },
     InputMode:{
@@ -165,7 +165,7 @@ module.exports={
     EvaluationSteps:{
         "Type":"Number",
         "Default":"100",
-        "MinValue":1",
+        "MinValue":"1",
         "Description":"Perform this many steps of evaluation. None, means that evaluation runs until input from "
     },
     RequirementsFile:{
