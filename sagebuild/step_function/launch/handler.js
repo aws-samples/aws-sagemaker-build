@@ -35,9 +35,15 @@ exports.handler=function(event,context,callback){
                             train:true
                         }
                     }else if(bucket===process.env.CODE_BUCKET){
-                        var input={
-                            build:true
-                            train:true
+                        if(["MXNET","TENSORFLOW"].includes(process.env.CONFIG_PRESET)){
+                            var input={
+                                train:true
+                            }
+                        }else{
+                            var input={
+                                build:true
+                                train:true
+                            }
                         }
                     }else{
                         var input=message

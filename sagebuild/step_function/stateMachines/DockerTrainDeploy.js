@@ -8,6 +8,12 @@ module.exports={
     "States": {
         "start":{
             Type:"Pass",
+            Next:"setTime"
+        },
+        "setTime":{
+            Type:"Task",
+            Resource:"${StepLambdaSetTime.Arn}",
+            ResultPath:'$',
             Next:"IfBuild"
         },
         "IfBuild":{
@@ -15,7 +21,7 @@ module.exports={
             Choices:[{
                 Variable:`$.build`,
                 StringEquals:"true",
-                Next:`setUpTrain` 
+                Next:`buildImages` 
             },{
                 Variable:`$.build`,
                 StringEquals:"false",
@@ -37,7 +43,7 @@ module.exports={
             },{
                 Variable:`$.train`,
                 StringEquals:"false",
-                Next:`setTime` 
+                Next:`getModelConfig` 
             }],
             Default:`setUpTrain`
         },
@@ -66,12 +72,6 @@ module.exports={
                     inference:"${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepo}:Inference"
                 }
             },
-            Next:"setTime"
-        },
-        "setTime":{
-            Type:"Task",
-            Resource:"${StepLambdaSetTime.Arn}",
-            ResultPath:'$',
             Next:"getTrainingConfig"
         },
         "getTrainingConfig":{

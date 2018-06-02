@@ -14,7 +14,7 @@ if(require.main === module){
 module.exports=run
 async function run(){
     var obj=require('../')
-    var template=JSON.stringify(obj)
+    var template=JSON.stringify(obj,null,2)
     
     await s3.putObject({
         Bucket:bucket,

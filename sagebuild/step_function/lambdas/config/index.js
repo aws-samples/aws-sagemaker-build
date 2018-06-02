@@ -37,7 +37,7 @@ function getInfo(name){
     var types=configs.filter(x=>fs.readdirSync(`${__dirname}/${x}`)
         .map(x=>x.split('.')[0]).includes(name)
     )
-
+    
     var code=types.map(type=>{
         try{
             var txt=fs.readFileSync(__dirname+`/${type}/${name}.js`,'utf-8')
@@ -48,6 +48,7 @@ function getInfo(name){
         }
         return {type,js,txt}
     })
+    var custom=code.find(x=>x.type==="custom")
     return {code:nextCode(0),runtime:nextRuntime(0)}
     function nextCode(index){
         if(code[index]){
@@ -57,7 +58,7 @@ function getInfo(name){
                 nextCode(++index)
             ]}
         }else{
-            return {"Ref":"AWS::NoValue"}
+            return custom.txt
         }
     }
     function nextRuntime(index){
@@ -68,7 +69,7 @@ function getInfo(name){
                 nextRuntime(++index)
             ]}
         }else{
-            return {"Ref":"AWS::NoValue"}
+            return custom.js ? "nodejs6.10" : "python3.6"
         }
     }
 }

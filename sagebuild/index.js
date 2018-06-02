@@ -11,7 +11,7 @@ module.exports={
   "Conditions":Object.assign(
     _.fromPairs(configs.map(x=>[
         `Config${x}`,
-        {"Fn::Equals":[{"Ref":"ConfigPresetType"},x]}
+        {"Fn::Equals":[{"Ref":`ConfigPresetType`},x]}
     ])),
     stateMachines.conditions,
   {

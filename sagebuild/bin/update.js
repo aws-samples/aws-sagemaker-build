@@ -14,7 +14,13 @@ async function run(){
     var result=await cf.updateStack({
         StackName:await name.get(),
         Capabilities:["CAPABILITY_NAMED_IAM"],
-        TemplateURL:`http://s3.amazonaws.com/${bucket}/sagebuild.json`
+        TemplateURL:`http://s3.amazonaws.com/${bucket}/sagebuild.json`,
+        Parameters:Object.keys(config.parameters)
+            .map(param=>{return{
+                ParameterKey:param,
+                ParameterValue:config.parameters[param]
+            }})
+
     }).promise()
     await wait()
 }

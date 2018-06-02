@@ -115,7 +115,8 @@ module.exports={
             Variables:{
                 STATE_MACHINE:{"Ref":"StateMachine"},
                 DATA_BUCKET:{"Fn::GetAtt":["Variables","DataBucket"]},
-                CODE_BUCKET: {"Ref":"ExternalCodeBucket"}
+                CODE_BUCKET: {"Ref":"ExternalCodeBucket"},
+                CONFIG_PRESET:{"Ref":"ConfigPresetType"}
             }
         },
         "Handler": "index.handler",

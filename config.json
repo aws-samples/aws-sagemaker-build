@@ -2,5 +2,7 @@
     "region":"us-east-1",
     "profile":"default",
     "templateBucket":"jmc-assets",
-    "parameters":{}
+    "parameters":{
+        "ConfigPresetType":"MXNET"
+    }
 }
