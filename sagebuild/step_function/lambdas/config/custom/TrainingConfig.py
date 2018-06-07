@@ -31,7 +31,7 @@ def handler(event,context):
       },
       "RoleArn":event["params"]["training"]["role"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds":parseInt(os.environ["TRAINMAXRUN"])
+        "MaxRuntimeInSeconds":parseInt(os.environ["TRAINMAXRUN"])*60*60
       },
       "TrainingJobName":event["name"], 
       "HyperParameters":JSON.parse(os.environ["HyperParameters"]),

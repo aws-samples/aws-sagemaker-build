@@ -1,4 +1,7 @@
 module.exports={
+    "CodeBucket":{
+        "Value":{"Ref":"CodeBucket"}
+    },
     "TrainingRoleArn":{
         "Value":{"Fn::GetAtt":["TrainingRole","Arn"]}
     },

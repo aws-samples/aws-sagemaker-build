@@ -51,7 +51,15 @@ module.exports=Object.assign(
     "DataBucket":{
         "Type" : "AWS::S3::Bucket",
         Condition:"CreateDataBucket",
-        "Properties" : {}
+        "Properties" : {
+            Tags:[{
+                Key:"sagebuild:channel:train",
+                Value:"train/"
+            },{
+                Key:"sagebuild:channel:test",
+                Value:"test/"
+            }]
+        }
     },
     "DataClear":{
         "Type": "Custom::S3Clear",
@@ -59,10 +67,33 @@ module.exports=Object.assign(
         "DependsOn":["CFNLambdaPolicy"],
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["S3ClearLambda", "Arn"] },
-            "Bucket":{"Fn::GetAtt":["Variables","DataBucket"]}
+            "Bucket":{"Ref":"DataBucket"}
         }
     },
-    
+    "CheckPointBucket":{
+        "Type" : "AWS::S3::Bucket",
+        "Properties" : {}
+    },
+    "CheckPointClear":{
+        "Type": "Custom::S3Clear",
+        "DependsOn":["CFNLambdaPolicy"],
+        "Properties": {
+            "ServiceToken": { "Fn::GetAtt" : ["S3ClearLambda", "Arn"] },
+            "Bucket":{"Ref":"CheckPointBucket"}
+        }
+    },
+    "CodeBucket":{
+        "Type" : "AWS::S3::Bucket",
+        "Properties" : {}
+    },
+    "CodeClear":{
+        "Type": "Custom::S3Clear",
+        "DependsOn":["CFNLambdaPolicy"],
+        "Properties": {
+            "ServiceToken": { "Fn::GetAtt" : ["S3ClearLambda", "Arn"] },
+            "Bucket":{"Ref":"CodeBucket"}
+        }
+    },
     ModelRole:{
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -103,7 +134,8 @@ module.exports=Object.assign(
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
-                        {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"}
+                        {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"}
                     ]
                 },
                 {
@@ -185,7 +217,8 @@ module.exports=Object.assign(
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
-                        {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"}
+                        {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"}
                     ]
                 },
                 {

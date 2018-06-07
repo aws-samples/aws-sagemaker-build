@@ -9,7 +9,7 @@ exports.handler=(event,context,cb)=>{
         Key:"BuildStack",
         Value:event.StackName
     })
-    
+    event.params.training.args.InputDataConfig=event.data    
     sagemaker.createTrainingJob(event.params.training.args).promise()
     .then(result=>cb(null,result.TrainingJobArn))
     .catch(cb)

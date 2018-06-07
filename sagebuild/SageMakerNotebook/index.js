@@ -2,14 +2,23 @@ var fs=require('fs')
 var Promise=require('bluebird')
 var _=require('lodash')
 
-module.exports=Object.assign(require('./setup'),{
+module.exports={
     "SageMakerNotebookInstance":{
         "Type": "AWS::SageMaker::NotebookInstance",
         Condition:"InternalNoteBookInstance",
         "Properties": {
             InstanceType:"ml.t2.medium",
             NotebookInstanceName:{"Fn::GetAtt":["Notebook","Name"]},
-            RoleArn:{"Fn::GetAtt":["InternalNotebookRole","Arn"]}
+            RoleArn:{"Fn::GetAtt":["InternalNotebookRole","Arn"]},
+            LifecycleConfigName:{"Fn::GetAtt":["SageMakerNotebookLifecycle","NotebookInstanceLifecycleConfigName"]}
+        }
+    },
+    "SageMakerNotebookLifecycle":{
+        "Type" : "AWS::SageMaker::NotebookInstanceLifecycleConfig",
+        "Properties" : {
+            OnCreate:[{
+                Content:{"Fn::Base64":{"Fn::Sub":fs.readFileSync(`${__dirname}/scripts/OnCreate.sh`,"utf-8")}}
+            }]
         }
     },
     "InternalNotebookRole":{
@@ -28,7 +37,11 @@ module.exports=Object.assign(require('./setup'),{
                 }
               ]
             },
-            "Path": "/"
+            "Path": "/",
+            "ManagedPolicyArns":[
+                {"Ref":"NotebookPolicy"},
+                "arn:aws:iam::aws:policy/AdministratorAccess"
+            ]
           }
     },
     "ExternalNotebookRole":{
@@ -45,7 +58,7 @@ module.exports=Object.assign(require('./setup'),{
       "Properties": {
         Roles:[{"Fn::If":[
             "InternalNoteBookInstance",
-            {"Ref":"InternalNotebookRole"},
+            {"Ref":"AWS::NoValue"},
             {"Ref":"ExternalNotebookRole"}
         ]}],
         "PolicyDocument": {
@@ -56,7 +69,8 @@ module.exports=Object.assign(require('./setup'),{
               "Resource":[{"Ref":"LaunchTopic"}]
           },{
               "Effect": "Allow",
-              "Action": ["cloudformation:DescribeStacks"],
+              "Action": ["cloudformation:DescribeStacks",
+                "cloudformation:UpdateStack"],
               "Resource":[{"Fn::Sub":
                 "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*"
               }]
@@ -89,7 +103,9 @@ module.exports=Object.assign(require('./setup'),{
               "Action": ["s3:*"],
               "Resource":[
                 {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
-                {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"}
+                {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"},
+                {"Fn::Sub":"arn:aws:s3:::${AssetBucket}/*"},
+                {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"}
               ]
           },{
               "Effect": "Deny",
@@ -107,8 +123,12 @@ module.exports=Object.assign(require('./setup'),{
               "Effect": "Allow",
               "Action": ["sns:Publish"],
               "Resource":[{"Ref":"LaunchTopic"}]
+          },{
+              "Effect": "Allow",
+              "Action": ["logs:*"],
+              "Resource":["*"]
           }]
         }
       }
     }
-})
+}

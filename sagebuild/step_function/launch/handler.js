@@ -26,7 +26,11 @@ exports.handler=function(event,context,callback){
             
             switch(source){
                 case "custom":
-                    var input=message
+                    var input={
+                        original:message,
+                        train:message.train || true ,
+                        build:!["MXNET","TENSORFLOW"].includes(process.env.CONFIG_PRESET)
+                    }
                     break;
                 case "aws:s3":
                     var bucket=record.s3.bucket.name
@@ -41,7 +45,7 @@ exports.handler=function(event,context,callback){
                             }
                         }else{
                             var input={
-                                build:true
+                                build:true,
                                 train:true
                             }
                         }
@@ -56,11 +60,13 @@ exports.handler=function(event,context,callback){
                     }
                     break;
             }
-            return stepfunctions.startExecution({
+            var param={
                 stateMachineArn:process.env.STATE_MACHINE,
                 name:`SNS-${event.Records[0].Sns.MessageId}`,
-                input:input
-            }).promise()
+                input:typeof input === "string" ? input : JSON.stringify(input)
+            }
+            console.log(JSON.stringify(param),null,2)
+            return stepfunctions.startExecution(param).promise()
         }
     })
     .then(()=>callback(null))

@@ -1,9 +1,22 @@
 exports.handler=function(event,context,callback){
     console.log(JSON.stringify(event,null,2))
 
+    var Hyperparameters=Object.assign({
+        sagemaker_container_log_level:process.env.CONTAINERLOGLEVEL,
+        sagemaker_enable_cloudwatch_metrics:process.env.ENABLECLOUDWATCHMETRICS,
+        sagemaker_job_name:`"${event["name"]}"`,
+        sagemaker_program:`"${process.env.TRAINENTRYPOINT}"`,
+        sagemaker_region:`"${process.env.AWS_REGION}"`,
+        sagemaker_submit_directory:`"${process.env.TRAINSOURCEFILE}"`,
+    },JSON.parse(process.env.HYPERPARAMETERS || "{}"))
+
+    Object.keys(Hyperparameters).forEach(x=>{
+        var value=Hyperparameters[x]
+        Hyperparameters[x]= typeof value==="string" ? value : JSON.stringify(value)
+    })
     callback(null,{
       "AlgorithmSpecification": { 
-        "TrainingImage":event["images"]["train"], 
+        "TrainingImage":create_image_uri(), 
         "TrainingInputMode":process.env.INPUTMODE
       },
       "InputDataConfig": [ 
@@ -26,21 +39,14 @@ exports.handler=function(event,context,callback){
       "ResourceConfig": { 
         "InstanceCount": process.env.TRAININSTANCECOUNT, 
         "InstanceType": process.env.TRAININSTANCETYPE, 
-        "VolumeSizeInGB":parseInt(process.env.TRAINVOLUMNSIZE), 
+        "VolumeSizeInGB":parseInt(process.env.TRAINVOLUMESIZE), 
       },
       "RoleArn":event["params"]["training"]["role"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds": 86400
+        "MaxRuntimeInSeconds":parseInt(process.env.TRAINMAXRUN)*60*60
       },
       "TrainingJobName":event["name"], 
-      "HyperParameters": Object.assign({
-            sagemaker_container_log_level:process.env.CONTAINERLOGLEVEL,
-            sagemaker_enable_cloudwatch_metrics:process.env.CONTAINERLOGLEVEL,
-            sagemaker_job_name:`"${event["name"]}"`,
-            sagemaker_program:`"${process.env.TRAINENTRYPOINT}"`,
-            sagemaker_region:`"${process.env.AWS_REGION}"`,
-            sagemaker_submit_directory:`"${process.env.TRAINSOURCEFILE}"`,
-        },process.env.HYPERPARAMETERS || {}),
+      "HyperParameters":Hyperparameters,
       "Tags": []
     })
 }
@@ -48,5 +54,5 @@ exports.handler=function(event,context,callback){
 function create_image_uri(){
     var account='520713654638'
     var instance=process.env.TRAININSTANCETYPE.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${process.env.FRAMEWORKVERSION}-${instance}-${process.env.PYVERSION}`
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-mxnet:${process.env.MXNETVERSION}-${instance}-${process.env.PYVERSION}`
 }

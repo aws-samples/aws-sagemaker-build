@@ -30,20 +30,20 @@ exports.handler=function(event,context,callback){
       },
       "RoleArn":event["params"]["training"]["role"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds": 86400
+        "MaxRuntimeInSeconds":parseInt(process.env.TRAINMAXRUN)*60*60
       },
       "TrainingJobName":event["name"], 
       "HyperParameters": Object.assign({
         sagemaker_container_log_level:"20",
         sagemaker_enable_cloudwatch_metrics:"false",
         sagemaker_job_name:`"${event["name"]}"`,
-        sagemaker_program:'"recommender.py"',
+        sagemaker_program:`"${process.env.TRAINENTRYPOINT}"`,
         sagemaker_region:`"${process.env.AWS_REGION}"`,
         sagemaker_submit_directory:`"${process.env.HOSTSOURCEFILE}"`,
-        checkpoint_path:"",
-        evaluation_steps:"",
-        training_steps:"",
-      },process.env.HYPERPARAMETERS || {}),
+        checkpoint_path:`"s3://${process.env.CHECKPOINTBUCKET}/${event["name"]}"`,
+        evaluation_steps:process.env.EVALUATIONSTEPS,
+        training_steps:process.env.TRAININGSTEPS,
+      },JSON.parse(process.env.HYPERPARAMETERS || "{}")),
       "Tags": []
     })
 }
@@ -51,5 +51,5 @@ exports.handler=function(event,context,callback){
 function create_image_uri(){
     var account='520713654638'
     var instance=process.env.TRAININSTANCETYPE.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${process.env.FRAMEWORKVERSION}-${instance}-${process.env.PYVERSION}`
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${process.env.TENSORFLOWVERSION}-${instance}-${process.env.PYVERSION}`
 }

@@ -8,7 +8,7 @@ exports.handler=(event,context,callback)=>{
         ExecutionRoleArn:event.model.role,
         ModelName:event.name,
         PrimaryContainer:{
-            Image:create_image_uri,
+            Image:create_image_uri(),
             ModelDataUrl:event.params.training.args.ModelArtifacts.S3ModelArtifacts,
             Environment:{
                 SAGEMAKER_CONTAINER_LOG_LEVEL:process.env.CONTAINERLOGLEVEL,
@@ -28,5 +28,5 @@ exports.handler=(event,context,callback)=>{
 function create_image_uri(){
     var account='520713654638'
     var instance=process.env.TRAININSTANCETYPE.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-mxnet:${process.env.FRAMEWORKVERSION}-${instance}-${process.env.PYVERSION}`
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-mxnet:${process.env.MXNETVERSION}-${instance}-${process.env.PYVERSION}`
 }

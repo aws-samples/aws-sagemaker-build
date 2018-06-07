@@ -19,7 +19,13 @@ function lambda(name){
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Environment":{
-            "Variables":params
+            "Variables":Object.assign(
+                params,
+                {"CHECKPOINTBUCKET":{"Ref":"CheckPointBucket"}},
+                {"STACKNAME":{"Ref":"AWS::StackName"}},
+                {"MXNETVERSION":"1.1"},
+                {"TENSORFLOWVERSION":"1.6"}
+            )
         },
         "Code": {
             "ZipFile":info.code

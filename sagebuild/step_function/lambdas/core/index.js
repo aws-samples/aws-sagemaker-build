@@ -15,6 +15,11 @@ function lambda(name){
     return [`StepLambda${name.split('.')[0]}`,{
       "Type": "AWS::Lambda::Function",
       "Properties": {
+        "Environment":{
+            "Variables":{
+                "STACKNAME":{"Ref":"AWS::StackName"}
+            }
+        },
         "Code": {
             "ZipFile":code
         },

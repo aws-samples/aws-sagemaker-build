@@ -3,6 +3,7 @@
     "profile":"default",
     "templateBucket":"jmc-assets",
     "parameters":{
-        "ConfigPresetType":"MXNET"
+        "ConfigPresetType":"MXNET",
+        "AssetBucket":"jmc-assets"
     }
 }

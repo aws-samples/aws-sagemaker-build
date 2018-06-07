@@ -1,2 +1,4 @@
-../template.json:index.js cfn/* codebuild/* step_function/*
-	node ./bin/check.js 
+./build/notebooks.zip:SageMakerNoteBook/notebooks/* 
+	cd SageMakerNoteBook/notebooks && zip -r ../../build/notebooks.zip .
+
+

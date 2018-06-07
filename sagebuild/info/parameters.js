@@ -7,6 +7,9 @@ var configs=fs.readdirSync(`${__dirname}/../step_function/lambdas/config/`)
     .map(x=>x.toUpperCase())
 
 module.exports={
+    AssetBucket:{
+        "Type":"String",
+    },
     ExternalTrainingPolicy:{
         "Type":"String",
         "Default":"NONE"
@@ -14,10 +17,6 @@ module.exports={
     ExternalHostingPolicy:{
         "Type":"String",
         "Default":"NONE"
-    },
-    FrameWorkVersion:{
-        "Type":"String",
-        "Default":"1.0.0"
     },
     TrainEntryPoint:{
         "Type":"String",
@@ -172,11 +171,6 @@ module.exports={
         "Type":"String",
         "Default":"NONE",
         "Description":"Path to a requirements.txt file. The path should be within and relative to source_dir. This is a file containing a list of items to be installed using pip install. Details on the format can be found in the Pip User Guide."
-    },
-    CheckpointPath:{
-        "Type":"String",
-        "Default":"NONE",
-        "Description":" S3 location where checkpoint data will saved and restored. The default location is bucket_name/job_name/checkpoint. If the location already has checkpoints before the training starts, the model will restore state from the last saved checkpoint. It is very useful to restart a training."
     },
     "HyperParameters":{
         "Type":"String",

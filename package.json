@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "up": "node ./sagebuild/bin/launch.js",
-    "update": "node ./sagebuild/bin/update.js",
+    "up": "cd ./sagebuild && make && node ./bin/launch.js",
+    "update": "cd ./sagebuild && make && node ./bin/update.js",
     "down": "node ./sagebuild/bin/delete.js",
     "check":"node ./sagebuild/bin/check.js"
   },
