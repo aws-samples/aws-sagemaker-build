@@ -4,8 +4,12 @@ def handler(event,context):
     print(json.dumps(event,indent=2))
     return {
       "AlgorithmSpecification": { 
-        "TrainingImage":event["images"]["train"], 
-        "TrainingInputMode":os.environ["INPUTMODE"]
+        "TrainingImage":"${}.dkr.ecr.${}.amazonaws.com/${}:Training".format(
+            event["params"]["accountid"],
+            event["params"]["region"],
+            event["params"]["ecrrepo"]
+        ), 
+        "TrainingInputMode":event.params.inputmode
       },
       "InputDataConfig": [ 
         {
@@ -13,7 +17,7 @@ def handler(event,context):
           "DataSource": { 
             "S3DataSource": { 
               "S3DataType": "S3Prefix", 
-              "S3Uri":f"s3://{event['Buckets']['Data']}/train/", 
+              "S3Uri":f"s3://{event['params']['databucket']}/train/", 
               "S3DataDistributionType": "FullyReplicated" 
             }
           },
@@ -22,18 +26,18 @@ def handler(event,context):
         },
       ],
       "OutputDataConfig": { 
-        'S3OutputPath':f"s3://{event['Buckets']['Artifact']}", 
+        'S3OutputPath':f"s3://{event['params']['artifactbucket']}", 
       },
       "ResourceConfig": { 
-        "InstanceCount": os.environ["TRAINGINSTANCECOUNT"], 
-        "InstanceType": os.environ["TRAININSTANCETYPE"], 
-        "VolumeSizeInGB": int(os.environ["TRAINVOLUMESIZE"]), 
+        "InstanceCount": event["params"]["trainginstancecount"], 
+        "InstanceType": event["params"]["traininstancetype"], 
+        "VolumeSizeInGB": int(event["params"]["trainvolumesize"]), 
       },
-      "RoleArn":event["params"]["training"]["role"], 
+      "RoleArn":event["params"]["trainingrole"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds":parseInt(os.environ["TRAINMAXRUN"])*60*60
+        "MaxRuntimeInSeconds":parseInt(event["params"]["trainmaxrun"])*60*60
       },
-      "TrainingJobName":event["name"], 
-      "HyperParameters":JSON.parse(os.environ["HyperParameters"]),
+      "TrainingJobName":event["params"]["name"], 
+      "HyperParameters":JSON.parse(event["params"]["hyperparameters"]),
       "Tags": []
     }

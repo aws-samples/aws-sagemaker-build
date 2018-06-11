@@ -10,6 +10,6 @@ exports.handler=(event,context,cb)=>{
     .then(result=>cb(null,result.builds[0]))
     .catch(x=>{
         console.log(x)
-        cb(x)
+        cb(new Error(x))
     })
 }

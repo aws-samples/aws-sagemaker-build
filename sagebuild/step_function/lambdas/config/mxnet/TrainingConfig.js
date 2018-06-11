@@ -2,13 +2,13 @@ exports.handler=function(event,context,callback){
     console.log(JSON.stringify(event,null,2))
 
     var Hyperparameters=Object.assign({
-        sagemaker_container_log_level:process.env.CONTAINERLOGLEVEL,
-        sagemaker_enable_cloudwatch_metrics:process.env.ENABLECLOUDWATCHMETRICS,
-        sagemaker_job_name:`"${event["name"]}"`,
-        sagemaker_program:`"${process.env.TRAINENTRYPOINT}"`,
+        sagemaker_container_log_level:event.params.containerloglevel,
+        sagemaker_enable_cloudwatch_metrics:event.params.enablecloudwatchmetrics,
+        sagemaker_job_name:`"${event.params.name}"`,
+        sagemaker_program:`"${event.params.trainentrypoint}"`,
         sagemaker_region:`"${process.env.AWS_REGION}"`,
-        sagemaker_submit_directory:`"${process.env.TRAINSOURCEFILE}"`,
-    },JSON.parse(process.env.HYPERPARAMETERS || "{}"))
+        sagemaker_submit_directory:`"${event.params.trainsourcefile}"`,
+    },JSON.parse(event.params.hyperparameters || "{}"))
 
     Object.keys(Hyperparameters).forEach(x=>{
         var value=Hyperparameters[x]
@@ -16,43 +16,29 @@ exports.handler=function(event,context,callback){
     })
     callback(null,{
       "AlgorithmSpecification": { 
-        "TrainingImage":create_image_uri(), 
-        "TrainingInputMode":process.env.INPUTMODE
+        "TrainingImage":create_image_uri(event.params), 
+        "TrainingInputMode":event.params.inputmode
       },
-      "InputDataConfig": [ 
-        {
-          "ChannelName": "train", 
-          "DataSource": { 
-            "S3DataSource": { 
-              "S3DataType": "S3Prefix", 
-              "S3Uri":`s3://${event.Buckets.Data}/train/`, 
-              "S3DataDistributionType": "ShardedByS3Key" 
-            }
-          },
-          "CompressionType": "None",
-          "RecordWrapperType": "None" 
-        },
-      ],
       "OutputDataConfig": { 
-        'S3OutputPath':`s3://${event['Buckets']['Artifact']}`, 
+        'S3OutputPath':`s3://${event.params.artifactbucket}`, 
       },
       "ResourceConfig": { 
-        "InstanceCount": process.env.TRAININSTANCECOUNT, 
-        "InstanceType": process.env.TRAININSTANCETYPE, 
-        "VolumeSizeInGB":parseInt(process.env.TRAINVOLUMESIZE), 
+        "InstanceCount": event.params.traininstancecount, 
+        "InstanceType": event.params.traininstancetype, 
+        "VolumeSizeInGB":parseInt(event.params.trainvolumesize), 
       },
-      "RoleArn":event["params"]["training"]["role"], 
+      "RoleArn":event["params"]["trainingrole"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds":parseInt(process.env.TRAINMAXRUN)*60*60
+        "MaxRuntimeInSeconds":parseInt(event.params.trainmaxrun)*60*60
       },
-      "TrainingJobName":event["name"], 
+      "TrainingJobName":event.params.name, 
       "HyperParameters":Hyperparameters,
       "Tags": []
     })
 }
 
-function create_image_uri(){
+function create_image_uri(params){
     var account='520713654638'
-    var instance=process.env.TRAININSTANCETYPE.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-mxnet:${process.env.MXNETVERSION}-${instance}-${process.env.PYVERSION}`
+    var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-mxnet:${params.mxnetversion}-${instance}-${params.pyversion}`
 }

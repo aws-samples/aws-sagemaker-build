@@ -4,7 +4,7 @@ var sagemaker=new aws.SageMaker()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    sagemaker.createModel(event.args.model).promise()
+    sagemaker.DeleteModel({ModelName:event.args.model.ModelName}).promise()
     .then(result=>{
         cb(null,result)
     })

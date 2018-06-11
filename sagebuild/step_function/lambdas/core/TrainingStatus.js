@@ -5,13 +5,11 @@ var sagemaker=new aws.SageMaker()
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
-    
     sagemaker.describeTrainingJob({
-        TrainingJobName:event.params.training.args.TrainingJobName
+        TrainingJobName:event.args.training.TrainingJobName
     }).promise()
     .then(result=>{
-        Object.assign(event.params.training.args,result)
-        cb(null,event)
+        cb(null,result)
     })
-    .catch(cb)
+    .catch(x=>cb(new Error(x)))
 }

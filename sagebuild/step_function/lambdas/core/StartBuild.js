@@ -15,5 +15,5 @@ exports.handler=(event,context,cb)=>{
         }]
     }).promise()
     .then(result=>cb(null,result.build))
-    .catch(cb)
+    .catch(x=>cb(new Error(x)))
 }

@@ -8,16 +8,27 @@ module.exports={
     "States": {
         "start":{
             Type:"Pass",
+            Next:"initialize",
+        },
+        "initialize":{
+            Type:"Task",
+            Resource:"${StepLambdaInitialize.Arn}",
+            Next:"listmodels",
+        },
+        "listmodels":{
+            Type:"Task",
+            Resource:"${StepLambdaListModels.Arn}",
+            ResultPath:"$.params.models",
             Next:"IfBuild",
         },
         "IfBuild":{
             Type:"Choice",
             Choices:[{
-                Variable:`$.build`,
+                Variable:`$.params.build`,
                 BooleanEquals:true,
                 Next:`buildImages` 
             },{
-                Variable:`$.build`,
+                Variable:`$.params.build`,
                 BooleanEquals:false,
                 Next:`IfTrain` 
             }],
@@ -26,72 +37,45 @@ module.exports={
         "buildImages":{
             Type: "Parallel",
             Branches:[build('Training'),build('Inference')],
+            ResultPath:"$.outputs.build",
             Next:"IfTrain"
         },
         "IfTrain":{
             Type:"Choice",
             Choices:[{
-                Variable:`$.train`,
+                Variable:`$.params.train`,
                 BooleanEquals:true,
-                Next:`setUpTrain` 
+                Next:`getTrainingConfig` 
             },{
-                Variable:`$.train`,
+                Variable:`$.params.train`,
                 BooleanEquals:false,
-                Next:`getModelConfig` 
+                Next:`getArtifact` 
             }],
-            Default:`setUpTrain`
+            Default:`getTrainingConfig`
         },
-        "setUpTrain":{
-            Type:"Pass",
-            Result:{    
-                StackName:"${Variables.EndpointName}",
-                SNSTopic:"${TrainStatusTopic}",
-                model:{
-                    role:"${ModelRole.Arn}"
-                },
-                Buckets:{
-                    Artifact:"${ArtifactBucket}",
-                    Data:"${Variables.DataBucket}"
-                },
-                endpoint:{},
-                params:{
-                    training:{
-                        role:"${TrainingRole.Arn}"
-                    },
-                    endpoint:{
-                    }
-                },
-                images:{
-                    train:"${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepo}:Training",
-                    inference:"${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepo}:Inference"
-                }
-            },
-            Next:"setTime"
-        },
-        "setTime":{
+        "getArtifact":{
             Type:"Task",
-            Resource:"${StepLambdaSetTime.Arn}",
-            ResultPath:'$',
-            Next:"getDataConfig"
-        },
-        "getDataConfig":{
-            Type:"Task",
-            Resource:"${StepLambdaGetDataConfig.Arn}",
-            ResultPath:'$.data',
-            Next:"getTrainingConfig"
+            Resource:"${StepLambdaGetArtifact.Arn}",
+            Next:"getModelConfig",
         },
         "getTrainingConfig":{
             Type:"Task",
             InputPath:"$",
             Resource:"${LambdaVariables.TrainingConfig}",
-            ResultPath:"$.params.training.args",
+            ResultPath:"$.args.training",
+            Next:"getDataConfig"
+        },
+        "getDataConfig":{
+            Type:"Task",
+            Resource:"${StepLambdaGetDataConfig.Arn}",
+            ResultPath:'$.args.training.InputDataConfig',
             Next:"startTraining"
         },
         "startTraining":{
             Type:"Task",
             InputPath:"$",
             Resource:"${StepLambdaStartTraining.Arn}",
-            ResultPath:"$.params.training.Arn",
+            ResultPath:"$.outputs.training",
             Next:"waitForTraining"
         },
         "waitForTraining":{
@@ -102,17 +86,17 @@ module.exports={
         "getTrainingStatus":{
             Type:"Task",
             Resource:"${StepLambdaTrainingStatus.Arn}",
-            ResultPath:"$",
+            ResultPath:"$.status.training",
             Next:"checkTrainingStatus"
         },
         "checkTrainingStatus":{
             Type:"Choice",
             Choices:[{
-                Variable:`$.params.training.args.TrainingJobStatus`,
+                Variable:`$.status.training.TrainingJobStatus`,
                 StringEquals:"InProgress",
                 Next:`waitForTraining` 
             },{
-                Variable:`$.params.training.args.TrainingJobStatus`,
+                Variable:`$.status.training.TrainingJobStatus`,
                 StringEquals:"Completed",
                 Next:`getModelConfig` 
             }],
@@ -125,33 +109,33 @@ module.exports={
         },
         "getModelConfig":{
             Type:"Task",
-            InputPath:"$",
             Resource:"${LambdaVariables.ModelConfig}",
-            ResultPath:"$.params.model.args",
+            ResultPath:"$.args.model",
             Next:"createModel"
         },
         "createModel":{
             Type:"Task",
             Resource:"${StepLambdaCreateModel.Arn}",
-            ResultPath:"$.params.model.args",
+            ResultPath:"$.outputs.models",
             Next:"getEndpointConfig"
         },
         "getEndpointConfig":{
             Type:"Task",
             InputPath:"$",
             Resource:"${LambdaVariables.EndpointConfig}",
-            ResultPath:"$.params.endpoint.args",
+            ResultPath:"$.args.endpoint",
             Next:"createEndpointConfig"
         },
         "createEndpointConfig":{
             Type:"Task",
             Resource:"${StepLambdaCreateEndpointConfig.Arn}",
-            ResultPath:"$.endpoint",
+            ResultPath:"$.outputs.endpoint",
             Next:"updateEndpoint"
         },
         "updateEndpoint":{
             Type:"Task",
             Resource:"${StepLambdaUpdateEndpoint.Arn}",
+            ResultPath:"$.outputs.deploy",
             Next:"waitForEndpoint"
         },
         "waitForEndpoint":{
@@ -162,25 +146,111 @@ module.exports={
         "endpointStatus":{
             Type:"Task",
             Resource:"${StepLambdaEndpointStatus.Arn}",
+            ResultPath:"$.status.endpoint",
             Next:"endpointCheck"
         },
         "endpointCheck":{
             Type:"Choice",
             Choices:[{
                 Or:[{
-                    Variable:`$.endpoint.EndpointStatus`,
+                    Variable:`$.status.endpoint.EndpointStatus`,
                     StringEquals:"Creating",
                 },{
-                    Variable:`$.endpoint.EndpointStatus`,
+                    Variable:`$.status.endpoint.EndpointStatus`,
                     StringEquals:"Updating",
                 }],
                 Next:`waitForEndpoint` 
             },{
-                Variable:`$.endpoint.EndpointStatus`,
+                Variable:`$.status.endpoint.EndpointStatus`,
                 StringEquals:"InService",
                 Next:`Success` 
             }],
-            Default:`endpointFail`
+            Default:`endpointRollbackClear`
+        },
+        "endpointRollbackClear":{
+            Type:"Task",
+            Resource:"${StepLambdaRollbackClear.Arn}",
+            Next:"endpointRollbackClearStatus"
+        },
+        "endpointRollbackClearStatus":{
+            Type:"Task",
+            Resource:"${StepLambdaEndpointStatus.Arn}",
+            ResultPath:"$.status.endpoint",
+            Next:"waitForRollbackClear"
+        },
+        "waitForRollbackClear":{
+            Type:"Wait",
+            Seconds:10,
+            Next:"endpointRollbackClearCheck"
+        },
+        "endpointRollbackClearCheck":{
+            Type:"Choice",
+            Choices:[{
+                Or:[{
+                    Variable:`$.status.endpoint.EndpointStatus`,
+                    StringEquals:"Deleting",
+                },{
+                    Variable:`$.status.endpoint.EndpointStatus`,
+                    StringEquals:"Failed",
+                }],
+                Next:"endpointRollbackClearStatus" 
+            },{
+                Variable:`$.endpoint.EndpointStatus`,
+                StringEquals:"Empty",
+                Next:`endpointRollback` 
+            }],
+            Default:`endpointRollback`
+        },
+        "endpointRollback":{
+            Type:"Task",
+            Resource:"${StepLambdaRollback.Arn}",
+            Next:"waitForRollback"
+        },
+        "waitForRollback":{
+            Type:"Wait",
+            Seconds:10,
+            Next:"endpointRollbackStatus"
+        },
+        "endpointRollbackStatus":{
+            Type:"Task",
+            Resource:"${StepLambdaEndpointStatus.Arn}",
+            ResultPath:"$.status.endpoint",
+            Next:"endpointRollbackCheck",
+        },
+        "endpointRollbackCheck":{
+            Type:"Choice",
+            Choices:[{
+                Or:[{
+                    Variable:`$.status.endpoint.EndpointStatus`,
+                    StringEquals:"Creating",
+                },{
+                    Variable:`$.status.endpoint.EndpointStatus`,
+                    StringEquals:"Updating",
+                }],
+                Next:`waitForRollback` 
+            },{
+                Or:[{
+                    Variable:`$.endpoint.EndpointStatus`,
+                    StringEquals:"InService",
+                },{
+                    Variable:`$.endpoint.EndpointStatus`,
+                    StringEquals:"Empty",
+                }],
+                Next:"deleteEndpointConfig"
+            }],
+            Default:"deleteEndpointConfig"
+        },
+        "deleteEndpointConfig":{
+            Type:"Task",
+            Resource:"${StepLambdaDeleteEndpointConfig.Arn}",
+            ResultPath:"$.outputs.deleteEndpointConfig",
+            Next:"deleteModel"
+        },
+        "deleteModel":{
+            Type:"Task",
+            Resource:"${StepLambdaDeleteModel.Arn}",
+            ResultPath:"$.outputs.deleteModel",
+            Next:"endpointFail"
         },
         "endpointFail":{
             Type:"Task",
@@ -220,7 +290,7 @@ function build(name){
             "buildImage":{
                 Type:"Task",
                 Resource:"${StepLambdaStartBuild.Arn}",
-                ResultPath:`$.build.${name}`,
+                ResultPath:`$.outputs.build`,
                 Next:`wait${name}`
             },
             "wait":{
@@ -231,18 +301,17 @@ function build(name){
             "buildStatus":{
                 Type:"Task",
                 Resource:"${StepLambdaBuildStatus.Arn}",
-                InputPath:`$.build.${name}`,
-                ResultPath:`$.build.${name}`,
+                ResultPath:`$.status.build`,
                 Next:`checkImage${name}`
             },
             "checkImage":{
                 Type:"Choice",
                 Choices:[{
-                    Variable:`$.build.${name}.buildStatus`,
+                    Variable:`$.status.build.buildStatus`,
                     StringEquals:"IN_PROGRESS",
                     Next:`wait${name}` 
                 },{
-                    Variable:`$.build.${name}.buildStatus`,
+                    Variable:`$.status.build.buildStatus`,
                     StringEquals:"SUCCEEDED",
                     Next:`EndBuild${name}` 
                 }],

@@ -6,18 +6,18 @@ exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
     var args=Object.assign({
-        EndpointConfigName:event.name
-    },event.params.endpoint.args) 
+        EndpointConfigName:event.params.name,
+        Tags:[]
+    },event.args.endpoint) 
     
-    if(event.params.model.args.old[1]){
-        args.Tags=[{
-            Key:"previous",Value:event.params.model.args.old[1]
-        }]
+    if(event.params.models[0]){
+        args.Tags.push({
+            Key:"sagebuild:previous",Value:event.params.models[0]
+        })
     }
     sagemaker.createEndpointConfig(args).promise()
     .then(result=>{
-        event.params.endpoint.arn=result.EndpointConfigArn
-        cb(null,event.endpoint)
+        cb(null,result)
     })
     .catch(x=>cb(new Error(x)))
 }

@@ -8,7 +8,7 @@ exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
     return sagemaker.describeEndpoint({
-        EndpointName:event.StackName
+        EndpointName:event.params.stackname
     }).promise()
     .then(()=>true)
     .catch(error=>{
@@ -21,19 +21,18 @@ exports.handler=(event,context,cb)=>{
     .then(function(exists){
         if(exists){
             return sagemaker.updateEndpoint({
-                EndpointConfigName:event.name,
-                EndpointName:event.StackName
+                EndpointConfigName:event.params.name,
+                EndpointName:event.params.stackname
             }).promise()
         }else{
             return sagemaker.createEndpoint({
-                EndpointConfigName:event.name,
-                EndpointName:event.StackName
+                EndpointConfigName:event.params.name,
+                EndpointName:event.params.stackname
             }).promise()
         }
     })
     .then(result=>{
-        event.endpoint.name=event.StackName
-        cb(null,event)
+        cb(null,result)
     })
     .catch(x=>cb(new Error(x)))
 }

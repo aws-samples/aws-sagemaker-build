@@ -5,7 +5,7 @@ exports.handler=function(event,context,callback){
     console.log(JSON.stringify(event,null,2))
 
     s3.getBucketTagging({
-        Bucket:event.Buckets.Data
+        Bucket:event.params.databucket
     }).promise()
     .then(function(result){
         console.log(result)
@@ -17,7 +17,7 @@ exports.handler=function(event,context,callback){
                   "DataSource": { 
                     "S3DataSource": { 
                       "S3DataType": "S3Prefix", 
-                      "S3Uri":`s3://${event.Buckets.Data}/${x[1]}`, 
+                      "S3Uri":`s3://${event.params.databucket}/${x[1]}`, 
                       "S3DataDistributionType": "ShardedByS3Key" 
                     }
                   },
@@ -27,5 +27,5 @@ exports.handler=function(event,context,callback){
         console.log(out)
         callback(null,out)
     })
-    .catch(callback)
+    .catch(x=>cb(new Error(x)))
 }

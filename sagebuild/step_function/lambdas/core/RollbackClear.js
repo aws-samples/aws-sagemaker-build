@@ -1,10 +1,15 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
 var sagemaker=new aws.SageMaker()
+var crypto=require('crypto')
+var hash=crypto.randomBytes(8).toString('base64').replace('=','')
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    sagemaker.createModel(event.args.model).promise()
+    
+    return sagemaker.deleteEndpoint({
+        EndpointName:event.params.stackname
+    }).promise()
     .then(result=>{
         cb(null,result)
     })

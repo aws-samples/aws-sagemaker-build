@@ -5,13 +5,17 @@ var sagemaker=new aws.SageMaker()
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
-    
     sagemaker.describeEndpoint({
-        EndpointName:event.endpoint.name
+        EndpointName:event.params.stackname
     }).promise()
     .then(result=>{
-        Object.assign(event.endpoint,result)
-        cb(null,event)
+        cb(null,result)
     })
-    .catch(cb)
+    .catch(function(error){
+        if(error.message.match(/Could not find endpoint/)){
+            cb(null,{EndpointStatus:"Empty"})
+        }else{
+            cb(new Error(error))
+        }
+    })
 }

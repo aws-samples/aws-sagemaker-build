@@ -4,13 +4,12 @@ var sagemaker=new aws.SageMaker()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    event.Tags=event.Tags || []
-    event.Tags.push({
-        Key:"BuildStack",
-        Value:event.StackName
+    event.args.training.Tags=event.args.training.Tags || []
+    event.args.training.Tags.push({
+        Key:"sagebuild:BuildStack",
+        Value:event.params.stackname
     })
-    event.params.training.args.InputDataConfig=event.data    
-    sagemaker.createTrainingJob(event.params.training.args).promise()
-    .then(result=>cb(null,result.TrainingJobArn))
-    .catch(cb)
+    sagemaker.createTrainingJob(event.args.training).promise()
+    .then(result=>cb(null,result))
+    .catch(x=>cb(new Error(x)))
 }

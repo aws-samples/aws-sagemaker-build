@@ -5,22 +5,22 @@ var sagemaker=new aws.SageMaker()
 exports.handler=(event,context,callback)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     callback(null,{
-        ExecutionRoleArn:event.model.role,
-        ModelName:event.name,
+        ExecutionRoleArn:event.params.modelrole,
+        ModelName:event.params.name,
         PrimaryContainer:{
             Image:create_image_uri(),
-            ModelDataUrl:event.params.training.args.ModelArtifacts.S3ModelArtifacts,
+            ModelDataUrl:event.status.training.ModelArtifacts.S3ModelArtifacts,
             Environment:{
-                SAGEMAKER_CONTAINER_LOG_LEVEL:process.env.CONTAINERLOGLEVEL,
-                SAGEMAKER_ENABLE_CLOUDWATCH_METRICS:process.env.ENABLECLOUDWATCHMETRICS,
-                SAGEMAKER_PROGRAM:`${process.env.HOSTENTRYPOINT}`,
+                SAGEMAKER_CONTAINER_LOG_LEVEL:event.params.containerloglevel,
+                SAGEMAKER_ENABLE_CLOUDWATCH_METRICS:event.params.enablecloudwatchmetrics,
+                SAGEMAKER_PROGRAM:`${event.params.hostentrypoint}`,
                 SAGEMAKER_REGION:`${process.env.AWS_REGION}`,
-                SAGEMAKER_SUBMIT_DIRECTORY:`${process.env.HOSTSOURCEFILE}`,
+                SAGEMAKER_SUBMIT_DIRECTORY:`${event.params.hostsourcefile}`,
             }
         },
         Tags:[{
-            Key:"BuildStack",
-            Value:event.StackName
+            Key:"sagebuild:stack",
+            Value:event.params.stackname
         }]
     })
 }

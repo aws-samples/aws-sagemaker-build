@@ -4,6 +4,11 @@
     "templateBucket":"jmc-assets",
     "parameters":{
         "ConfigPresetType":"MXNET",
-        "AssetBucket":"jmc-assets"
+        "AssetBucket":"jmc-assets",
+        "HyperParameters":"{\"learning_rate\": 0.1}",
+        "TrainEntryPoint":"mnist.py",
+        "TrainSourceFile":"s3://sagebuild-128-codebucket-je76vmn8hxn1/script.tar.gz",
+        "HostEntryPoint":"mnist.py",
+        "HostSourceFile":"s3://sagebuild-128-codebucket-je76vmn8hxn1/script.tar.gz"
     }
 }

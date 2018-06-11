@@ -205,7 +205,9 @@ module.exports=Object.assign(
                         "s3:ListBucket"
                     ],
                     "Resource": [
-                        {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"}
+                        {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
                     ]
                 },
                 {
@@ -213,12 +215,13 @@ module.exports=Object.assign(
                     "Action": [
                         "s3:GetObject",
                         "s3:PutObject",
+                        "s3:HeadObject",
                         "s3:DeleteObject"
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
-                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"}
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
                     ]
                 },
                 {

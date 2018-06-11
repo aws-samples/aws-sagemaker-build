@@ -6,11 +6,11 @@ exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
   
     sns.publish({
-        TopicArn:event.SNSTopic,
+        TopicArn:event.params.statustopic,
         Subject:`SageBuild ${result}`,
         Message:`Training ${result}. 
-            StackName:${event.StackName} 
-            Name:${event.name}
+            StackName:${event.params.stackname} 
+            Name:${event.params.name}
             Date:${new Date()}
         `,
         MessageAttributes:{

@@ -24,7 +24,8 @@ function lambda(name){
                 {"CHECKPOINTBUCKET":{"Ref":"CheckPointBucket"}},
                 {"STACKNAME":{"Ref":"AWS::StackName"}},
                 {"MXNETVERSION":"1.1"},
-                {"TENSORFLOWVERSION":"1.6"}
+                {"TENSORFLOWVERSION":"1.6"},
+                {"ARTIFACTBUCKET":{"Ref":"ArtifactBucket"}},
             )
         },
         "Code": {

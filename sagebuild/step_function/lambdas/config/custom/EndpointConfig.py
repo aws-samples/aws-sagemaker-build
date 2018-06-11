@@ -4,9 +4,9 @@ def handler(event,context):
     print(json.dumps(event,indent=2))
     return {
       "ProductionVariants": [{
-          "InitialInstanceCount":os.environ["HOSTINSTANCECOUNT"], 
-          "InstanceType":os.environ["HOSTINSTANCETYPE"],
-          "ModelName":event["name"], 
+          "InitialInstanceCount":event["params"]["hostinstancecount"], 
+          "InstanceType":event["params"]["hostinstancetype"],
+          "ModelName":event["args"]["model"]["ModelName"], 
           "VariantName":"prod", 
         }]
     } 
