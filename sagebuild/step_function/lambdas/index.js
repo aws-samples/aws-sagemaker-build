@@ -48,7 +48,33 @@ module.exports=Object.assign(
                 "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
                 "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
                 "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-            ]
+            ],
+            "Policies":[{
+                "PolicyName":"Access",
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "ssm:Get*",
+                            "ssm:Put*",
+                        ],
+                        "Resource":[
+                            {"Fn::Sub":"arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterStore}"},
+                            {"Fn::Sub":"arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${VersionParameterStore}"}
+                        ]
+                  },{
+                        "Effect": "Allow",
+                        "Action": [
+                            "s3:*",
+                        ],
+                        "Resource":[
+                           {"Fn::GetAtt":["CodeBucket","Arn"]},
+                           {"Fn::Sub":"${CodeBucket.Arn}/*"}
+                        ]
+                  }]
+                }
+            }]
           }
         }
     })

@@ -15,6 +15,17 @@ module.exports={
         "Value":{"Fn::GetAtt":["AlexaLambda","Arn"]},
         "Description":"Lambda function for creating an alexa skill"
     },
+    "ParameterStore":{
+        "Value":{"Ref":"ParameterStore"}
+    },
+    "NoteBookUrl":{
+        "Value":{"Fn::If":[
+            "NoteBookInstance",
+            {"Fn::Sub":"https://console.aws.amazon.com/sagemaker/home?region=${AWS::Region}#/notebook-instances/openNotebook/${Notebook.Name}"},
+            "EMPTY" 
+        ]},
+        "Description":"AWS Console url of your sagemaker notebook instance, from here you can open the instance"
+    },
     "NoteBookInstance":{
         "Value":{"Fn::If":[
             "NoteBookInstance",
@@ -71,17 +82,9 @@ module.exports={
         "Value":{"Fn::Sub":"${LambdaVariables.EndpointConfig}"},
         "Description":"Lambda function that returns the Endpoint Config"
     },
-    "TrainingDockerfilePathLambda":{
-        "Value":{"Fn::Sub":"${LambdaVariables.TrainingDockerfilePath}"},
-        "Description":"Lambda function that returns the path of the Training Dockerfile in the code repo"
-    },
     "ModelConfigLambda":{
         "Value":{"Fn::Sub":"${LambdaVariables.ModelConfig}"},
         "Description":"Lambda function that returns Model Configuration"
-    },
-    "InferenceDockerfilePathLambda":{
-        "Value":{"Fn::Sub":"${LambdaVariables.InferenceDockerfilePath}"},
-        "Description":"Lambda function that returns the path of the Inference Dockerfile in the code repo"
     },
     "RepoUrl":{
         "Value":{"Fn::GetAtt":["Variables","RepoUrl"]},

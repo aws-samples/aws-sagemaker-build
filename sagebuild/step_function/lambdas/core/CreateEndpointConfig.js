@@ -6,7 +6,7 @@ exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
     var args=Object.assign({
-        EndpointConfigName:event.params.name,
+        EndpointConfigName:`${event.params.name}-${event.params.id}`,
         Tags:[]
     },event.args.endpoint) 
     

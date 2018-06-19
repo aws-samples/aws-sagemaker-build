@@ -7,6 +7,6 @@ def handler(event,context):
           "InitialInstanceCount":event["params"]["hostinstancecount"], 
           "InstanceType":event["params"]["hostinstancetype"],
           "ModelName":event["args"]["model"]["ModelName"], 
-          "VariantName":"prod", 
+          "VariantName":event["params"]["version"], 
         }]
     } 

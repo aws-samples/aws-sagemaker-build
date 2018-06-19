@@ -8,11 +8,13 @@ exports.handler=(event,context,cb)=>{
     sns.publish({
         TopicArn:event.params.statustopic,
         Subject:`SageBuild ${result}`,
-        Message:`Training ${result}. 
-            StackName:${event.params.stackname} 
-            Name:${event.params.name}
-            Date:${new Date()}
-        `,
+        Message:JSON.stringify({
+            Result:"Fail",
+            StackName:event.params.stackname,
+            Name:event.params.name,
+            Date:new Date(),
+            Error:event.error
+        },null,2),
         MessageAttributes:{
             event:{
                 DataType:"String",

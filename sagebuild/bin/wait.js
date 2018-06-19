@@ -39,7 +39,7 @@ async function wait(){
                     "DELETE_IN_PROGRESS",
                     "CREATE_IN_PROGRESS"
                 ].includes(status)){
-                    setTimeout(()=>next(),5000)
+                    setTimeout(()=>next(),1000)
                 }else{
                     spinner.fail(StackName+":"+status)
                     rej(status)

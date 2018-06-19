@@ -18,8 +18,6 @@ module.exports={
     "InternalNoteBookInstance":notEqual("NoteBookInstanceType","USE_EXTERNAL"),
     "ExternalNoteBookInstance":notEmpty("ExternalNotebook"),
     "ExternalEndpointConfigLambda":notEmpty("EndpointConfigLambda"),
-    "ExternalInferenceDockerfilePathLambda":notEmpty("InferenceDockerfilePathLambda"),
-    "ExternalTrainingDockerfilePathLambda":notEmpty("TrainingDockerfilePathLambda"),
     "ExternalTrainingConfigLambda":notEmpty("TrainingConfigLambda"),
     "ExternalModelConfigLambda":notEmpty("ModelConfigLambda"),
     "NoteBookInstance":{"Fn::Or":[
@@ -82,16 +80,6 @@ module.exports={
                 {"Ref":"ModelConfigLambda"},
                 {"Fn::GetAtt":["StepLambdaGetModelConfig","Arn"]},
             ]},
-            "InferenceDockerfilePath":{"Fn::If":[
-                "ExternalInferenceDockerfilePathLambda",
-                {"Ref":"InferenceDockerfilePathLambda"},
-                {"Fn::GetAtt":["StepLambdaGetInferenceDockerfilePath","Arn"]},
-            ]},
-            "TrainingDockerfilePath":{"Fn::If":[
-                "ExternalTrainingDockerfilePathLambda",
-                {"Ref":"TrainingDockerfilePathLambda"},
-                {"Fn::GetAtt":["StepLambdaGetTrainingDockerfilePath","Arn"]},
-            ]}
         }
     },
     "Variables":{

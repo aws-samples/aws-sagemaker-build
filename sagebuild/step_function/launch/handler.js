@@ -28,8 +28,8 @@ exports.handler=function(event,context,callback){
                 case "custom":
                     var input={
                         original:message,
-                        train:message.train || true ,
-                        build:!["MXNET","TENSORFLOW"].includes(process.env.CONFIG_PRESET)
+                        train:message.train || true,
+                        build:!["MXNET","TENSORFLOW","AMAZON"].includes(process.env.CONFIG_PRESET)
                     }
                     break;
                 case "aws:s3":

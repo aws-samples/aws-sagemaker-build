@@ -4,12 +4,13 @@ def handler(event,context):
     print(json.dumps(event,indent=2))
     return {
       "AlgorithmSpecification": { 
-        "TrainingImage":"${}.dkr.ecr.${}.amazonaws.com/${}:Training".format(
+        "TrainingImage":"{}.dkr.ecr.{}.amazonaws.com/{}:Training_v{}".format(
             event["params"]["accountid"],
-            event["params"]["region"],
-            event["params"]["ecrrepo"]
+            os.environ["AWS_REGION"],
+            event["params"]["ecrrepo"],
+            event["params"]["version"]
         ), 
-        "TrainingInputMode":event.params.inputmode
+        "TrainingInputMode":event["params"]["inputmode"]
       },
       "InputDataConfig": [ 
         {
@@ -29,15 +30,15 @@ def handler(event,context):
         'S3OutputPath':f"s3://{event['params']['artifactbucket']}", 
       },
       "ResourceConfig": { 
-        "InstanceCount": event["params"]["trainginstancecount"], 
+        "InstanceCount": event["params"]["traininstancecount"], 
         "InstanceType": event["params"]["traininstancetype"], 
         "VolumeSizeInGB": int(event["params"]["trainvolumesize"]), 
       },
       "RoleArn":event["params"]["trainingrole"], 
       "StoppingCondition": { 
-        "MaxRuntimeInSeconds":parseInt(event["params"]["trainmaxrun"])*60*60
+        "MaxRuntimeInSeconds":int(event["params"]["trainmaxrun"])*60*60
       },
-      "TrainingJobName":event["params"]["name"], 
-      "HyperParameters":JSON.parse(event["params"]["hyperparameters"]),
+      "TrainingJobName":"{}-{}".format(event["params"]["name"],event["params"]["id"]), 
+      "HyperParameters":event["params"]["hyperparameters"],
       "Tags": []
     }

@@ -19,14 +19,16 @@ exports.handler=(event,context,cb)=>{
         }
     })
     .then(function(exists){
+        var name=event.outputs.endpoint.EndpointConfigArn.match(
+            /arn:aws:sagemaker:.*:.*:endpoint-config\/(.*)/)[1]
         if(exists){
             return sagemaker.updateEndpoint({
-                EndpointConfigName:event.params.name,
+                EndpointConfigName:name,
                 EndpointName:event.params.stackname
             }).promise()
         }else{
             return sagemaker.createEndpoint({
-                EndpointConfigName:event.params.name,
+                EndpointConfigName:name,
                 EndpointName:event.params.stackname
             }).promise()
         }

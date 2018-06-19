@@ -1,0 +1,10 @@
+{
+  "default": {
+    "mxnet": {
+      "us-east-1": 1
+    },
+    "MXNET": {
+      "us-east-1": 1
+    }
+  }
+}

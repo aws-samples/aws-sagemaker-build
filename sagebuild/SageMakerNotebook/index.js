@@ -68,6 +68,16 @@ module.exports={
               "Action": ["sns:Publish"],
               "Resource":[{"Ref":"LaunchTopic"}]
           },{
+                "Effect": "Allow",
+                "Action": [
+                    "ssm:Get*",
+                    "ssm:Put*",
+                ],
+                "Resource":[
+                    {"Fn::Sub":"arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterStore}"},
+                    {"Fn::Sub":"arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${VersionParameterStore}"}
+                ]
+          },{
               "Effect": "Allow",
               "Action": ["cloudformation:DescribeStacks",
                 "cloudformation:UpdateStack"],
@@ -93,8 +103,6 @@ module.exports={
               "Effect": "Allow",
               "Action": ["lambda:UpdateFunctionCode"],
               "Resource":[
-                {"Fn::GetAtt":["StepLambdaGetTrainingDockerfilePath","Arn"]},
-                {"Fn::GetAtt":["StepLambdaGetInferenceDockerfilePath","Arn"]},
                 {"Fn::GetAtt":["StepLambdaGetTrainingConfig","Arn"]},
                 {"Fn::GetAtt":["StepLambdaGetEndpointConfig","Arn"]}
               ]

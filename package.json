@@ -1,11 +1,11 @@
 {
   "name": "sagebuild",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "up": "cd ./sagebuild && make && node ./bin/launch.js",
-    "update": "cd ./sagebuild && make && node ./bin/update.js",
+    "up": "cd ./sagebuild && make && ./bin/upload.sh && node ./bin/launch.js",
+    "update": "cd ./sagebuild && make && ./bin/upload.sh && node ./bin/update.js",
     "down": "node ./sagebuild/bin/delete.js",
     "check":"node ./sagebuild/bin/check.js"
   },

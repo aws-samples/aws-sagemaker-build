@@ -24,7 +24,13 @@ exports.handler=function(event,context,callback){
                                 ModelName:item.ModelName
                             }).promise()
                             .then(x=>next(index-1))
-                            .catch(rej)
+                            .catch(error=>{
+                                if(error.code==="ThrottlingException"){
+                                    setTimout(()=>next(index),2000)
+                                }else{
+                                    rej(error)
+                                }
+                            })
                         }else{
                             res()
                         }

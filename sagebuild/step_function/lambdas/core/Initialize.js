@@ -1,42 +1,53 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
 var codebuild=new aws.CodeBuild()
+var ssm=new aws.SSM()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     try{
-        var date=new Date()
-        var timestamp=`${date.getFullYear().toString()}-${addZeroBefore(date.getMonth()+1)}-${addZeroBefore(date.getDate())}-${addZeroBefore(date.getHours())}-${addZeroBefore(date.getMinutes())}-${addZeroBefore(date.getSeconds())}`
-        var name=`${process.env.PARAMSTACKNAME}-${timestamp}`
-        
-        var params={} 
-        Object.keys(process.env)
-            .filter(x=>x.match(/PARAM.*/))
-            .map(x=>[x.match(/PARAM(.*)/)[1].toLowerCase(),process.env[x]])
-            .forEach(x=>params[x[0]]=x[1])
-        
-        var params=Object.assign({},params,event,{
-            timestamp,
-            name,
+        Promise.all([
+            ssm.getParameter({
+                Name:process.env.PARAMETERSTORE
+            }).promise(),
+            ssm.getParameter({
+                Name:process.env.VERSIONPARAMETERSTORE
+            }).promise()
+        ])
+        .then(function(results){
+            console.log(JSON.stringify(results,null,2))
+            
+            var params=JSON.parse(results[0].Parameter.Value)
+            var version=(parseInt(results[1].Parameter.Value)+1).toString()
+            
+            var name=`${params.stackname}-v${version}`
+            Object.assign(params,event,{
+                timestamp:new Date(),
+                version,
+                id:Date.now().toString(),
+                name,
+                TrainingTag:`${name}-Training`,
+                InferenceTag:`${name}-Inference`
+            })
+            cb(null,{
+                params,
+                args:{
+                    build:{},
+                    training:{},
+                    endpoint:{}
+                },
+                outputs:{
+                    build:{},
+                    training:{},
+                    endpoint:{}
+                },
+                status:{
+                    endpoint:{},
+                    training:{}
+                }
+            })
         })
-
-        cb(null,{
-            params,
-            args:{
-                build:{},
-                training:{},
-                endpoint:{}
-            },
-            outputs:{
-                build:{},
-                training:{},
-                endpoint:{}
-            },
-            status:{
-                endpoint:{},
-                training:{}
-            }
-        })
+        .catch(x=>cb(new Error(x)))
     }catch(x){
         cb(new Error(x))
     }

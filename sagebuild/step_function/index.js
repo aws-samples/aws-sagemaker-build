@@ -2,10 +2,67 @@ var fs=require('fs')
 var Promise=require('bluebird')
 var _=require('lodash')
 
+var params=require('../info/parameters')
+var params=Object.assign(_.fromPairs(Object.keys(params)
+    .filter(x=>params[x].Type!=="CommaDelimitedList")
+    .filter(x=>x!=="HyperParameters")
+    .map(x=>[x.toLowerCase(),`\${${x}}`])),
+    {
+        "checkpointbucket":"${CheckPointBucket}",
+        "stackname":"${AWS::StackName}",
+        "mxnetversion":"1.1",
+        "hyperparameters":"HyperParameters",
+        "tensorflowversion":"1.6",
+        "stackname":"${AWS::StackName}",
+        "ecrrepo":"${ECRRepo}",
+        "modelrole":"${ModelRole.Arn}",
+        "trainingrole":"${TrainingRole.Arn}",
+        "databucket":"${Variables.DataBucket}",
+        "artifactbucket":"${ArtifactBucket}",
+        "assetbucket":"${AssetBucket}",
+        "statustopic":"${TrainStatusTopic}",
+        "accountid":"${AWS::AccountId}",
+        "codebucket":"${CodeBucket}",
+        "projectname":"${ImageBuild}",
+        trainentrypoint:"none",
+        hostinstancecount:"1",
+        hostinstancetype:"ml.t2.medium",
+        traininstancecount:"1",
+        traininstancetype:"ml.m5.large",
+        trainsourcefile:"none",
+        pyversion:"py3",
+        trainvolumesize:"10",
+        trainmaxrun:"4",
+        inputmode:"File",
+        hostentrypoint:"none",
+        hostsourcefile:"none",
+        enablecloudwatchmetrics:"false",
+        containerloglevel:"200",
+        trainingsteps:"1000",
+        evaluationsteps:"100",
+        requirementsfile:"none",
+        hyperparameters:{},
+        modelhostingenvironment:{}
+    })
 module.exports=Object.assign(
     require('./lambdas'),
     require('./stateMachines').StateMachine,
     require('./launch'),{
+    "ParameterStore":{
+        "Type" : "AWS::SSM::Parameter",
+        "Properties" : {
+            "Type" :"String",
+            "Value" :{"Fn::Sub":JSON.stringify(params)
+                .replace(/"HyperParameters"/,"${HyperParameters}")}
+        }
+    },
+    "VersionParameterStore":{
+        "Type" : "AWS::SSM::Parameter",
+        "Properties" : {
+            "Type" :"String",
+            "Value":"0"
+        }
+    },
     "ModelClear":{
         "Type": "Custom::SageMakerModelClear",
         "DependsOn":["CFNLambdaPolicy","EndpointConfigClear"],
@@ -38,7 +95,11 @@ module.exports=Object.assign(
     },
     "ArtifactBucket":{
         "Type" : "AWS::S3::Bucket",
-        "Properties" : {}
+        "Properties" : {
+            VersioningConfiguration:{
+                Status:"Enabled"
+            }
+        }
     },
     "ArtifactClear":{
         "Type": "Custom::S3Clear",
@@ -50,16 +111,7 @@ module.exports=Object.assign(
     },
     "DataBucket":{
         "Type" : "AWS::S3::Bucket",
-        Condition:"CreateDataBucket",
-        "Properties" : {
-            Tags:[{
-                Key:"sagebuild:channel:train",
-                Value:"train/"
-            },{
-                Key:"sagebuild:channel:test",
-                Value:"test/"
-            }]
-        }
+        Condition:"CreateDataBucket"
     },
     "DataClear":{
         "Type": "Custom::S3Clear",
@@ -131,11 +183,15 @@ module.exports=Object.assign(
                     "Effect": "Allow",
                     "Action": [
                         "s3:GetObject",
+                        "s3:Get*",
+                        "s3:PutObject",
+                        "s3:Head*",
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
-                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"}
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}"}
                     ]
                 },
                 {
@@ -213,15 +269,17 @@ module.exports=Object.assign(
                 {
                     "Effect": "Allow",
                     "Action": [
-                        "s3:GetObject",
+                        "s3:Get*",
                         "s3:PutObject",
-                        "s3:HeadObject",
+                        "s3:Head*",
                         "s3:DeleteObject"
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CheckPointBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CheckPointBucket}"},
                     ]
                 },
                 {

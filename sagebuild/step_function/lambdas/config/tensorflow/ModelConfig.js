@@ -1,32 +1,43 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
 var sagemaker=new aws.SageMaker()
+var s3=new aws.S3()
 
 exports.handler=(event,context,callback)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    callback(null,{
-        ExecutionRoleArn:event.model.role,
-        ModelName:event.name,
-        PrimaryContainer:{
-            Image:create_image_uri(),
-            ModelDataUrl:event.params.training.args.ModelArtifacts.S3ModelArtifacts,
-            Environment:{
-                SAGEMAKER_CONTAINER_LOG_LEVEL:process.env.CONTAINERLOGLEVEL,
-                SAGEMAKER_ENABLE_CLOUDWATCH_METRICS:process.env.ENABLECLOUDWATCHMETRICS,
-                SAGEMAKER_PROGRAM:`${process.env.HOSTENTRYPOINT}`,
-                SAGEMAKER_REGION:`${process.env.AWS_REGION}`,
-                SAGEMAKER_SUBMIT_DIRECTORY:`${process.env.HOSTSOURCEFILE}`,
-            }
-        },
-        Tags:[{
-            Key:"BuildStack",
-            Value:event.StackName
-        }]
+    
+    var key= `versions/inference/v${event.params.version}.py`
+    s3.copyObject({
+        CopySource:event.params.hostsourcefile.match(/s3:\/\/(.*)/)[1],
+        Bucket:event.params.codebucket,
+        Key:key
+    }).promise()
+    .then(function(){
+        callback(null,{
+            ExecutionRoleArn:event.params.modelrole,
+            ModelName:`${event.params.name}-${event.params.id}`,
+            PrimaryContainer:{
+                Image:create_image_uri(event.params),
+                ModelDataUrl:event.status.training.ModelArtifacts.S3ModelArtifacts,
+                Environment:Object.assign({
+                    SAGEMAKER_CONTAINER_LOG_LEVEL:event.params.containerloglevel,
+                    SAGEMAKER_ENABLE_CLOUDWATCH_METRICS:event.params.enablecloudwatchmetrics,
+                    SAGEMAKER_PROGRAM:`${event.params.hostentrypoint}`,
+                    SAGEMAKER_REGION:`${process.env.AWS_REGION}`,
+                    SAGEMAKER_SUBMIT_DIRECTORY:`s3://${event.params.codebucket}/${key}`,
+                },event.params.modelhostingenvironment || {})
+            },
+            Tags:[{
+                Key:"sagebuild:stack",
+                Value:event.params.stackname
+            }]
+        })
     })
+    .catch(x=>callback(new Error(x)))
 }
 
-function create_image_uri(){
+function create_image_uri(params){
     var account='520713654638'
-    var instance=process.env.TRAININSTANCETYPE.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${process.env.TENSORFLOWVERSION}-${instance}-${process.env.PYVERSION}`
+    var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${params.tensorflowversion}-${instance}-${params.pyversion}`
 }

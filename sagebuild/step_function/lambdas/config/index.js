@@ -5,13 +5,8 @@ var configs=fs.readdirSync(__dirname)
     .filter(x=>x!=='index.js')
     .filter(x=>x!=='README.md')
 
-var config_types=fs.readdirSync(`${__dirname}/custom/`)
+var config_types=fs.readdirSync(`${__dirname}/byod/`)
     .map(x=>x.split('.')[0])
-var params=require('../../../info/parameters')
-var params=_.fromPairs(Object.keys(params)
-    .filter(x=>params[x].Type!=="CommaDelimitedList")
-    .map(x=>[x.toUpperCase(),{Ref:x}]))
-
 module.exports=_.fromPairs(config_types.map(lambda))
 function lambda(name){
     var info=getInfo(name)
@@ -19,14 +14,7 @@ function lambda(name){
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Environment":{
-            "Variables":Object.assign(
-                params,
-                {"CHECKPOINTBUCKET":{"Ref":"CheckPointBucket"}},
-                {"STACKNAME":{"Ref":"AWS::StackName"}},
-                {"MXNETVERSION":"1.1"},
-                {"TENSORFLOWVERSION":"1.6"},
-                {"ARTIFACTBUCKET":{"Ref":"ArtifactBucket"}},
-            )
+            "Variables":{}
         },
         "Code": {
             "ZipFile":info.code
@@ -44,7 +32,6 @@ function getInfo(name){
     var types=configs.filter(x=>fs.readdirSync(`${__dirname}/${x}`)
         .map(x=>x.split('.')[0]).includes(name)
     )
-    
     var code=types.map(type=>{
         try{
             var txt=fs.readFileSync(__dirname+`/${type}/${name}.js`,'utf-8')
@@ -55,7 +42,7 @@ function getInfo(name){
         }
         return {type,js,txt}
     })
-    var custom=code.find(x=>x.type==="custom")
+    var byod=code.find(x=>x.type==="byod")
     return {code:nextCode(0),runtime:nextRuntime(0)}
     function nextCode(index){
         if(code[index]){
@@ -65,7 +52,7 @@ function getInfo(name){
                 nextCode(++index)
             ]}
         }else{
-            return custom.txt
+            return byod.txt
         }
     }
     function nextRuntime(index){
@@ -76,7 +63,7 @@ function getInfo(name){
                 nextRuntime(++index)
             ]}
         }else{
-            return custom.js ? "nodejs6.10" : "python3.6"
+            return byod.js ? "nodejs6.10" : "python3.6"
         }
     }
 }

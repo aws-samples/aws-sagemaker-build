@@ -4,9 +4,11 @@ var sagemaker=new aws.SageMaker()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    
-    sagemaker.createEndpointConfig({
-        EndpointConfigName:event.args.endpoint.EndpointConfigName 
+    var name=event.outputs.endpoint.EndpointConfigArn.match(
+            /arn:aws:sagemaker:.*:.*:endpoint-config\/(.*)/)[1]
+   
+    sagemaker.deleteEndpointConfig({
+        EndpointConfigName:name
     }).promise()
     .then(result=>{
         cb(null,result)

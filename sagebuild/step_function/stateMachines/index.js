@@ -3,8 +3,7 @@ var fs=require('fs')
 
 var machines=fs.readdirSync(__dirname)
     .filter(x=>x!=='index.js')
-    .map(x=>x.match(/(.*)\.js/)[1])
-
+    .map(x=>x.match(/(.*)/)[1])
 exports.machines=machines
 
 exports.conditions=_.fromPairs(machines.map(x=>[

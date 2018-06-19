@@ -5,13 +5,13 @@ var codebuild=new aws.CodeBuild()
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     codebuild.startBuild({
-        projectName:event.projectName,
+        projectName:event.params.projectname,
         environmentVariablesOverride:[{
             name:"IMAGE_TAG",
-            value:event.tag
+            value:`${event.params.buildtype}_v${event.params.version}`
         },{
             name:"DOCKERFILE_PATH",
-            value:event.dockerfile_path
+            value:event.params[`dockerfile_path_${event.params.buildtype}`]
         }]
     }).promise()
     .then(result=>cb(null,result.build))

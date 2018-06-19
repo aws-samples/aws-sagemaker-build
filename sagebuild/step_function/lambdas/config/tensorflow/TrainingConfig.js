@@ -1,55 +1,65 @@
+var aws=require('aws-sdk')
+aws.config.region=process.env.AWS_REGION 
+var s3=new aws.S3()
+
 exports.handler=function(event,context,callback){
     console.log(JSON.stringify(event,null,2))
+    var key= `versions/training/v${event.params.version}.tar.gz`
+    try{
+        s3.copyObject({
+            CopySource:event.params.trainsourcefile.match(/s3:\/\/(.*)/)[1],
+            Bucket:event.params.codebucket,
+            Key:key
+        }).promise()
+        .then(function(){
+            var others=event.params.hyperparameters || {} 
+            Object.keys(others).forEach(function(key){
+                others[key]=`${JSON.stringify(others[key])}` 
+            })
+            var Hyperparameters=Object.assign({
+                sagemaker_container_log_level:event.params.containerloglevel,
+                sagemaker_enable_cloudwatch_metrics:event.params.enablecloudwatchmetrics,
+                sagemaker_job_name:`"${event.params.name}-${event.params.id}"`,
+                sagemaker_program:`"${event.params.trainentrypoint}"`,
+                sagemaker_region:`"${process.env.AWS_REGION}"`,
+                sagemaker_submit_directory:`"s3://${event.params.codebucket}/${key}"`,
+                checkpoint_path:`"s3://${event.params.checkpointbucket}/${event.params.name}-${event.params.id}/checkpoints"`,
+            },others)
 
-    callback(null,{
-      "AlgorithmSpecification": { 
-        "TrainingImage":create_image_uri(), 
-        "TrainingInputMode": "File"
-      },
-      "InputDataConfig": [ 
-        {
-          "ChannelName": "train", 
-          "DataSource": { 
-            "S3DataSource": { 
-              "S3DataType": "S3Prefix", 
-              "S3Uri":`s3://${event.Buckets.Data}/train/`, 
-              "S3DataDistributionType": "ShardedByS3Key" 
-            }
-          },
-          "CompressionType": "None",
-          "RecordWrapperType": "None" 
-        },
-      ],
-      "OutputDataConfig": { 
-        'S3OutputPath':`s3://${event['Buckets']['Artifact']}`, 
-      },
-      "ResourceConfig":{ 
-        "InstanceCount": process.env.TRAINGINSTANCECOUNT, 
-        "InstanceType": process.env.TRAININSTANCETYPE, 
-        "VolumeSizeInGB": parseInt(process.env.TRAINVOLUMESIZE), 
-      },
-      "RoleArn":event["params"]["training"]["role"], 
-      "StoppingCondition": { 
-        "MaxRuntimeInSeconds":parseInt(process.env.TRAINMAXRUN)*60*60
-      },
-      "TrainingJobName":event["name"], 
-      "HyperParameters": Object.assign({
-        sagemaker_container_log_level:"20",
-        sagemaker_enable_cloudwatch_metrics:"false",
-        sagemaker_job_name:`"${event["name"]}"`,
-        sagemaker_program:`"${process.env.TRAINENTRYPOINT}"`,
-        sagemaker_region:`"${process.env.AWS_REGION}"`,
-        sagemaker_submit_directory:`"${process.env.HOSTSOURCEFILE}"`,
-        checkpoint_path:`"s3://${process.env.CHECKPOINTBUCKET}/${event["name"]}"`,
-        evaluation_steps:process.env.EVALUATIONSTEPS,
-        training_steps:process.env.TRAININGSTEPS,
-      },JSON.parse(process.env.HYPERPARAMETERS || "{}")),
-      "Tags": []
-    })
+            Object.keys(Hyperparameters).forEach(x=>{
+                var value=Hyperparameters[x]
+                Hyperparameters[x]= typeof value==="string" ? value : JSON.stringify(value)
+            })
+            callback(null,{
+              "AlgorithmSpecification": { 
+                "TrainingImage":create_image_uri(event.params), 
+                "TrainingInputMode":event.params.inputmode
+              },
+              "OutputDataConfig": { 
+                'S3OutputPath':`s3://${event.params.artifactbucket}`, 
+              },
+              "ResourceConfig": { 
+                "InstanceCount": event.params.traininstancecount, 
+                "InstanceType": event.params.traininstancetype, 
+                "VolumeSizeInGB":parseInt(event.params.trainvolumesize), 
+              },
+              "RoleArn":event["params"]["trainingrole"], 
+              "StoppingCondition": { 
+                "MaxRuntimeInSeconds":parseInt(event.params.trainmaxrun)*60*60
+              },
+              "TrainingJobName":`${event.params.name}-${event.params.id}`, 
+              "HyperParameters":Hyperparameters,
+              "Tags": []
+            })
+        })
+        .catch(x=>callback(new Error(x)))
+    }catch(e){
+        callback(new Error(e))
+    }
 }
 
-function create_image_uri(){
+function create_image_uri(params){
     var account='520713654638'
-    var instance=process.env.TRAININSTANCETYPE.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${process.env.TENSORFLOWVERSION}-${instance}-${process.env.PYVERSION}`
+    var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${params.tensorflowversion}-${instance}-${params.pyversion}`
 }

@@ -2,11 +2,6 @@ var fs=require('fs')
 var _=require('lodash')
 var lambdas=fs.readdirSync(__dirname).filter(x=>!x.match(/index.js/))
 
-var params=require('../../../info/parameters')
-var params=_.fromPairs(Object.keys(params)
-    .filter(x=>params[x].Type!=="CommaDelimitedList")
-    .map(x=>[`PARAM${x.toUpperCase()}`,{Ref:x}]))
-
 module.exports=Object.assign(
     _.fromPairs(lambdas.map(lambda)),
     {
@@ -20,26 +15,10 @@ function lambda(name){
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Environment":{
-            "Variables":Object.assign(
-                params,
-                {
-                    "PARAMCHECKPOINTBUCKET":{"Ref":"CheckPointBucket"},
-                    "PARAMSTACKNAME":{"Ref":"AWS::StackName"},
-                    "PARAMMXNETVERSION":"1.1",
-                    "PARAMTENSORFLOWVERSION":"1.6",
-                    "PARAMSTACKNAME":{"Ref":"AWS::StackName"},
-                    "PARAMECRREPO":{"Ref":"ECRRepo"},
-                    "PARAMMODELROLE":{"Fn::GetAtt":["ModelRole","Arn"]},
-                    "PARAMTRAININGROLE":{"Fn::GetAtt":["TrainingRole","Arn"]},
-                    "PARAMDATABUCKET":{"Fn::GetAtt":["Variables","DataBucket"]},
-                    "PARAMARTIFACTBUCKET":{"Ref":"ArtifactBucket"},
-                    "PARAMASSETBUCKET":{"Ref":"AssetBucket"},
-                    "PARAMSTATUSTOPIC":{"Ref":"TrainStatusTopic"},
-                    "PARAMACCOUNTID":{"Ref":"AWS::AccountId"},
-                    "PARAMCODEBUCKET":{"Ref":"CodeBucket"},
-                    "PARAMPROJECTNAME":{"Ref":"ImageBuild"}
-                }
-            )
+            "Variables":{
+                "PARAMETERSTORE":{"Ref":"ParameterStore"},
+                "VERSIONPARAMETERSTORE":{"Ref":"VersionParameterStore"},
+            }
         },
         "Code": {
             "ZipFile":code
