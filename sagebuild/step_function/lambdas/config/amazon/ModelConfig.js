@@ -30,7 +30,7 @@ function create_image_uri(params){
             "us-east-2":"404615174143",
             "eu-west-1":"438346466558",
             "ap-northeast-1":"351501993468"
-        }[params.region]
+        }[process.env.AWS_REGION]
     }else if(params.algorithm==="lda"){
         var account={
             "us-west-2":"999678624901",
@@ -38,7 +38,7 @@ function create_image_uri(params){
             "us-east-2":"999911452149",
             "eu-west-1":"266724342769",
             "ap-northeast-1":"258307448986"
-        }[params.region]
+        }[process.env.AWS_REGION]
     }else if(["xgboost","image-classification","seq2seq","blazingtext"].includes(algorithm)){
         var account={
             "us-west-2":"433757028032",
@@ -46,7 +46,7 @@ function create_image_uri(params){
             "us-east-2":"825641698319",
             "eu-west-1":"685385470294",
             "ap-northeast-1":"501404015308"
-        }[params.region]
+        }[process.env.AWS_REGION]
     }else if(params.algorithm==="forecasting-deepar"){
         var account={
             "us-west-2":"156387875391",
@@ -54,7 +54,7 @@ function create_image_uri(params){
             "us-east-2":"566113047672",
             "eu-west-1":"224300973850",
             "ap-northeast-1":"633353088612"
-        }[params.region]
+        }[process.env.AWS_REGION]
     }
 
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${algorithm}:1`

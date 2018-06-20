@@ -182,6 +182,27 @@ module.exports=Object.assign(
                 {
                     "Effect": "Allow",
                     "Action": [
+                        "s3:*",
+                    ],
+                    "Resource": [
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}"}
+                    ]
+                },
+                {
+                    "Effect": "Deny",
+                    "Action": [
+                        "s3:Put*",
+                        "s3:Delete*",
+                    ],
+                    "Resource": [
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}"}
+                    ]
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
                         "s3:GetObject",
                         "s3:Get*",
                         "s3:PutObject",

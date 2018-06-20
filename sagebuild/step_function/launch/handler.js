@@ -23,40 +23,20 @@ exports.handler=function(event,context,callback){
             }else{
                 var source="custom" 
             }
-            
+            var build=!["MXNET","TENSORFLOW","AMAZON"].includes(process.env.CONFIG_PRESET)
             switch(source){
                 case "custom":
                     var input={
                         original:message,
-                        train:message.train || true,
-                        build:!["MXNET","TENSORFLOW","AMAZON"].includes(process.env.CONFIG_PRESET)
+                        train:typeof(myVariable) != "undefined" ? message.train : true,
+                        build
                     }
                     break;
                 case "aws:s3":
-                    var bucket=record.s3.bucket.name
-                    if(bucket===process.env.DATA_BUCKET){
-                        var input={
-                            train:true
-                        }
-                    }else if(bucket===process.env.CODE_BUCKET){
-                        if(["MXNET","TENSORFLOW"].includes(process.env.CONFIG_PRESET)){
-                            var input={
-                                train:true
-                            }
-                        }else{
-                            var input={
-                                build:true,
-                                train:true
-                            }
-                        }
-                    }else{
-                        var input=message
-                    }
-                    break;
                 case "aws:codecommit":
                     var input={
-                        train:true,
-                        build:true
+                        build,
+                        train:true
                     }
                     break;
             }
