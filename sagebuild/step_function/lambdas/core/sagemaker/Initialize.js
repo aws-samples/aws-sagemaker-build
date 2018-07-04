@@ -3,6 +3,9 @@ aws.config.region=process.env.AWS_REGION
 var codebuild=new aws.CodeBuild()
 var ssm=new aws.SSM()
 
+
+
+
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     try{
@@ -32,18 +35,28 @@ exports.handler=(event,context,cb)=>{
             cb(null,{
                 params,
                 args:{
-                    build:{},
+                    build:{
+                        Training:{},
+                        Inference:{}
+                    },
                     training:{},
                     endpoint:{}
                 },
                 outputs:{
-                    build:{},
+                    build:{
+                        Training:{},
+                        Inference:{}
+                    },
                     training:{},
                     endpoint:{}
                 },
                 status:{
                     endpoint:{},
-                    training:{}
+                    training:{},
+                    build:{
+                        Training:{},
+                        Inference:{}
+                    }
                 }
             })
         })

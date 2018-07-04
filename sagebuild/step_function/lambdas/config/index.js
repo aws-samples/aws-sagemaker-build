@@ -7,6 +7,7 @@ var configs=fs.readdirSync(__dirname)
 
 var config_types=fs.readdirSync(`${__dirname}/byod/`)
     .map(x=>x.split('.')[0])
+
 module.exports=_.fromPairs(config_types.map(lambda))
 function lambda(name){
     var info=getInfo(name)
@@ -47,7 +48,7 @@ function getInfo(name){
     function nextCode(index){
         if(code[index]){
             return {"Fn::If":[
-                `Config${code[index].type.toUpperCase()}`,
+                `ConfigFramework${code[index].type.toUpperCase()}`,
                 code[index].txt,
                 nextCode(++index)
             ]}
@@ -58,7 +59,7 @@ function getInfo(name){
     function nextRuntime(index){
         if(code[index]){
             return {"Fn::If":[
-                `Config${code[index].type.toUpperCase()}`,
+                `ConfigFramework${code[index].type.toUpperCase()}`,
                 code[index].js ? "nodejs6.10" : "python3.6",
                 nextRuntime(++index)
             ]}

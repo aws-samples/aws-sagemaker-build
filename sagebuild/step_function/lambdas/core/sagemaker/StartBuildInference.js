@@ -8,10 +8,10 @@ exports.handler=(event,context,cb)=>{
         projectName:event.params.projectname,
         environmentVariablesOverride:[{
             name:"IMAGE_TAG",
-            value:`${event.params.buildtype}_v${event.params.version}`
+            value:`Inference_v${event.params.version}`
         },{
             name:"DOCKERFILE_PATH",
-            value:event.params[`dockerfile_path_${event.params.buildtype}`]
+            value:event.params[`dockerfile_path_Inference`]
         }]
     }).promise()
     .then(result=>cb(null,result.build))

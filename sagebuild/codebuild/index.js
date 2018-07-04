@@ -105,20 +105,11 @@ module.exports={
             ]}
         }
     },
-    "ClearTrainingImage":{
+    "ClearECR":{
         "Type": "Custom::ClearImage",
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["ClearECRLambda", "Arn"] },
-            "repo":{"Ref":"ECRRepo"},
-            "tag":"Training"
-        }
-    },
-    "ClearInferanceImage":{
-        "Type": "Custom::ClearImage",
-        "Properties": {
-            "ServiceToken": { "Fn::GetAtt" : ["ClearECRLambda", "Arn"] },
-            "repo":{"Ref":"ECRRepo"},
-            "tag":"Inference"
+            "repo":{"Ref":"ECRRepo"}
         }
     },
     "ServiceRole": {

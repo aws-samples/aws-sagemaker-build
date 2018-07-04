@@ -8,7 +8,11 @@ var params=Object.assign(_.fromPairs(Object.keys(params)
     .filter(x=>x!=="HyperParameters")
     .map(x=>[x.toLowerCase(),`\${${x}}`])),
     {
+        "maxtrainingjobs":1,
+        "configtrain":"SAGEMAKER",
+        "maxparalleltrainingjobs":1,
         "checkpointbucket":"${CheckPointBucket}",
+        "endpointname":"${Variables.EndpointName}",
         "stackname":"${AWS::StackName}",
         "mxnetversion":"1.1",
         "hyperparameters":"HyperParameters",

@@ -6,7 +6,7 @@ exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
     sagemaker.describeEndpoint({
-        EndpointName:event.params.stackname
+        EndpointName:event.params.endpointname
     }).promise()
     .then(result=>{
         cb(null,result)

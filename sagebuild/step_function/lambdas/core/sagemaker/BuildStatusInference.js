@@ -5,7 +5,7 @@ var codebuild=new aws.CodeBuild()
 exports.handler=(event,context,cb)=>{
     console.log(JSON.stringify(event,null,2))
     codebuild.batchGetBuilds({
-        ids:[event.outputs.build.id] 
+        ids:[event.outputs.build.Inference.id] 
     }).promise()
     .then(result=>cb(null,result.builds[0]))
     .catch(x=>{

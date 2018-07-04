@@ -2,7 +2,7 @@ module.exports={
     "ParameterGroups":[{
         "Label":{"default":"General Parameters"},
         "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","TrainEntryPoint",
-        "TrainInstanceCount","TrainInstanceType","TrainSourceDir","TrainVolumeSize","InputMode","HostEntryPoint","HostSourceDir","ContainerLogLevel","HyperParameters","ModelHostingEnvironment","ConfigPresetType","Type","TrainMaxRun"]
+        "TrainInstanceCount","TrainInstanceType","TrainSourceDir","TrainVolumeSize","InputMode","HostEntryPoint","HostSourceDir","ContainerLogLevel","HyperParameters","ModelHostingEnvironment","ConfigFramework","ConfigDeploy","Type","TrainMaxRun"]
     },{
         "Label":{"default":"MXNet Parameters"},
         "Parameters":["PyVersion","EnableCloudwatchMetrics"]

@@ -2,13 +2,16 @@ var fs=require('fs')
 var _=require('lodash')
 var Promise=require('bluebird')
 var rollback=require('./rollback')
+var build=require('./build').build
 
-module.exports=Object.assign(rollback,{
-    "getModelConfig":{
+module.exports=Object.assign(
+    rollback,
+    build("Inference","createModel"),
+    {"getModelConfig":{
         Type:"Task",
         Resource:"${LambdaVariables.ModelConfig}",
         ResultPath:"$.args.model",
-        Next:"createModel"
+        Next:"IfBuildInference"
     },
     "createModel":{
         Type:"Task",

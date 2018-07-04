@@ -18,17 +18,23 @@ exports.handler=function(event,context,callback){
                 }else if(record.s3){
                     var source=record.eventSource
                 }else{
-                    var source=custom
+                    var source="custom"
                 }
             }else{
+                var record=message
                 var source="custom" 
             }
-            var build=!["MXNET","TENSORFLOW","AMAZON"].includes(process.env.CONFIG_PRESET)
+            var build={
+                Inference:!["MXNET","TENSORFLOW","AMAZON"]
+                    .includes(process.env.CONFIG_FRAMEWORK),
+                Training:!["MXNET","TENSORFLOW","AMAZON"]
+                    .includes(process.env.CONFIG_FRAMEWORK)
+            }
             switch(source){
                 case "custom":
                     var input={
                         original:message,
-                        train:typeof(myVariable) != "undefined" ? message.train : true,
+                        train:typeof(record.train) != "undefined" ? message.train : true,
                         build
                     }
                     break;

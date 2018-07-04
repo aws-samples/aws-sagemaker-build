@@ -2,16 +2,24 @@ var fs=require('fs')
 var _=require('lodash')
 var stateMachines=require('./step_function/stateMachines')
 var machines=stateMachines.machines
-var configs=fs.readdirSync(`${__dirname}/step_function/lambdas/config/`)
+var frameworkConfigs=fs.readdirSync(`${__dirname}/step_function/lambdas/config/`)
+    .filter(x=>x!=="index.js")
+    .map(x=>x.toUpperCase())
+
+var deployConfigs=fs.readdirSync(`${__dirname}/step_function/lambdas/core/`)
     .filter(x=>x!=="index.js")
     .map(x=>x.toUpperCase())
 
 module.exports={
   "Parameters":require('./info/parameters'),
   "Conditions":Object.assign(
-    _.fromPairs(configs.map(x=>[
-        `Config${x}`,
-        {"Fn::Equals":[{"Ref":`ConfigPresetType`},x]}
+    _.fromPairs(deployConfigs.map(x=>[
+        `ConfigDeploy${x}`,
+        {"Fn::Equals":[{"Ref":`ConfigDeploy`},x]}
+    ])),
+    _.fromPairs(frameworkConfigs.map(x=>[
+        `ConfigFramework${x}`,
+        {"Fn::Equals":[{"Ref":`ConfigFramework`},x]}
     ])),
     stateMachines.conditions,
   {

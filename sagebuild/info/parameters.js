@@ -2,13 +2,21 @@ var fs=require('fs')
 var _=require('lodash')
 var stateMachines=require('../step_function/stateMachines')
 var machines=stateMachines.machines
-var configs=fs.readdirSync(`${__dirname}/../step_function/lambdas/config/`)
+var frameworkConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/config/`)
+    .filter(x=>x!=="index.js")
+    .map(x=>x.toUpperCase())
+
+var deployConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/core/`)
     .filter(x=>x!=="index.js")
     .map(x=>x.toUpperCase())
 
 module.exports={
     AssetBucket:{
         "Type":"String",
+    },
+    AssetPrefix:{
+        "Type":"String",
+        "Default":"sagebuild"
     },
     ExternalTrainingPolicy:{
         "Type":"String",
@@ -18,10 +26,15 @@ module.exports={
         "Type":"String",
         "Default":"NONE"
     },
-    "ConfigPresetType":{
+    "ConfigFramework":{
         "Type":"String",
         "Default":"BYOD",
-        "AllowedValues":configs
+        "AllowedValues":frameworkConfigs
+    },
+    "ConfigDeploy":{
+        "Type":"String",
+        "Default":"SAGEMAKER",
+        "AllowedValues":deployConfigs
     },
     "Type":{
         "Type":"String",

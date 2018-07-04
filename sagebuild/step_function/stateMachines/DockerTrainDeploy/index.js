@@ -24,44 +24,7 @@ states={
             Type:"Task",
             Resource:"${StepLambdaListModels.Arn}",
             ResultPath:"$.params.models",
-            Next:"IfBuild",
-        },
-        "IfBuild":{
-            Type:"Choice",
-            Choices:[{
-                Variable:`$.params.build`,
-                BooleanEquals:true,
-                Next:`buildImages` 
-            },{
-                Variable:`$.params.build`,
-                BooleanEquals:false,
-                Next:`IfTrain` 
-            }],
-            Default:`buildImages`
-        },
-        "buildImages":{
-            Type: "Parallel",
-            Branches:[build('Training'),build('Inference')],
-            ResultPath:"$.outputs.build",
-            Next:"IfTrain"
-        },
-        "IfTrain":{
-            Type:"Choice",
-            Choices:[{
-                Variable:`$.params.train`,
-                BooleanEquals:true,
-                Next:`getTrainingConfig` 
-            },{
-                Variable:`$.params.train`,
-                BooleanEquals:false,
-                Next:`getArtifact` 
-            }],
-            Default:`getTrainingConfig`
-        },
-        "getArtifact":{
-            Type:"Task",
-            Resource:"${StepLambdaGetArtifact.Arn}",
-            Next:"getModelConfig",
+            Next:"IfTrain",
         },
         "Success": {
             Type:"Task",

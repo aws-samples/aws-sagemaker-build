@@ -6,9 +6,9 @@ var hash=crypto.randomBytes(8).toString('base64').replace('=','')
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    
+        
     return sagemaker.describeEndpoint({
-        EndpointName:event.params.stackname
+        EndpointName:event.params.endpointname
     }).promise()
     .then(()=>true)
     .catch(error=>{
@@ -23,13 +23,13 @@ exports.handler=(event,context,cb)=>{
             /arn:aws:sagemaker:.*:.*:endpoint-config\/(.*)/)[1]
         if(exists){
             return sagemaker.updateEndpoint({
+                EndpointName:event.params.endpointname,
                 EndpointConfigName:name,
-                EndpointName:event.params.stackname
             }).promise()
         }else{
             return sagemaker.createEndpoint({
+                EndpointName:event.params.endpointname,
                 EndpointConfigName:name,
-                EndpointName:event.params.stackname
             }).promise()
         }
     })

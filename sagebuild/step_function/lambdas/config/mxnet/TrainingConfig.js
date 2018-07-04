@@ -23,6 +23,7 @@ exports.handler=function(event,context,callback){
                 sagemaker_program:`"${event.params.trainentrypoint}"`,
                 sagemaker_region:`"${process.env.AWS_REGION}"`,
                 sagemaker_submit_directory:`"s3://${event.params.codebucket}/${key}"`,
+                checkpoint_path:`"s3://${event.params.checkpointbucket}/${event.params.name}-${event.params.id}/checkpoints"`,
             }, others)
 
             Object.keys(Hyperparameters).forEach(x=>{

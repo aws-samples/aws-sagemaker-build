@@ -22,6 +22,7 @@ exports.handler=function(event,context,callback){
         
         callback(null,out)
     }catch(e){
+        console.log(e)
         callback(new Error(e))
     }
 }
