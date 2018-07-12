@@ -26,7 +26,7 @@ exports.handler=function(event,context,callback){
                             .then(x=>next(index-1))
                             .catch(error=>{
                                 if(error.code==="ThrottlingException"){
-                                    setTimout(()=>next(index),2000)
+                                    setTimeout(()=>next(index),2000)
                                 }else{
                                     rej(error)
                                 }
