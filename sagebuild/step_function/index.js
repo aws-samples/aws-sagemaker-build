@@ -16,7 +16,7 @@ var params=Object.assign(_.fromPairs(Object.keys(params)
         "stackname":"${AWS::StackName}",
         "mxnetversion":"1.1",
         "hyperparameters":"HyperParameters",
-        "tensorflowversion":"1.6",
+        "tensorflowversion":"1.8",
         "stackname":"${AWS::StackName}",
         "ecrrepo":"${ECRRepo}",
         "modelrole":"${ModelRole.Arn}",
@@ -294,15 +294,13 @@ module.exports=Object.assign(
                 {
                     "Effect": "Allow",
                     "Action": [
-                        "s3:Get*",
-                        "s3:PutObject",
-                        "s3:Head*",
-                        "s3:DeleteObject"
+                        "s3:*",
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${CodeBucket}"},
                         {"Fn::Sub":"arn:aws:s3:::${CheckPointBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${CheckPointBucket}"},
                     ]

@@ -7,7 +7,7 @@
     "up": "cd ./sagebuild && make && ./bin/upload.sh && node ./bin/launch.js",
     "update": "cd ./sagebuild && make && ./bin/upload.sh && node ./bin/update.js",
     "down": "node ./sagebuild/bin/delete.js",
-    "check":"node ./sagebuild/bin/check.js"
+    "check": "node ./sagebuild/bin/check.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "bluebird": "^3.5.1",
     "cfn-response": "^1.0.1",
     "chalk": "^2.3.1",
+    "lodash": "^4.17.10",
     "ora": "^1.4.0",
     "uglify-es": "github:mishoo/UglifyJS2#harmony"
   }
