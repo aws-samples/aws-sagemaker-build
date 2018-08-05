@@ -25,6 +25,8 @@ module.exports={
   {
     "InternalNoteBookInstance":notEqual("NoteBookInstanceType","USE_EXTERNAL"),
     "ExternalNoteBookInstance":notEmpty("ExternalNotebook"),
+    "ExternalHostingPolicy":notEmpty("ExternalHostingPolicy"),
+    "ExternalTrainingPolicy":notEmpty("ExternalTrainingPolicy"),
     "ExternalEndpointConfigLambda":notEmpty("EndpointConfigLambda"),
     "ExternalTrainingConfigLambda":notEmpty("TrainingConfigLambda"),
     "ExternalModelConfigLambda":notEmpty("ModelConfigLambda"),
