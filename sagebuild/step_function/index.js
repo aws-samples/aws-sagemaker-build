@@ -166,7 +166,13 @@ module.exports=Object.assign(
           ]
         },
         "Path": "/",
-        "ManagedPolicyArns":["arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"],
+        "ManagedPolicyArns":[
+            "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess",
+            {"Fn::If":["ExternalHostingPolicy",
+                {"Ref":"ExternalHostingPolicy"},
+                {"Ref":"AWS::NoValue"}
+            ]}
+        ],
         "Policies":[{
             "PolicyName":"Access",
             "PolicyDocument": {
@@ -250,6 +256,13 @@ module.exports=Object.assign(
           ]
         },
         "Path": "/",
+        "ManagedPolicyArns":[
+            "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess",
+            {"Fn::If":["ExternalTrainingPolicy",
+                {"Ref":"ExternalTrainingPolicy"},
+                {"Ref":"AWS::NoValue"}
+            ]}
+        ],
         "Policies":[{
             "PolicyName":"Access",
             "PolicyDocument": {

@@ -20,11 +20,11 @@ module.exports={
     },
     ExternalTrainingPolicy:{
         "Type":"String",
-        "Default":"NONE"
+        "Default":"EMPTY"
     },
     ExternalHostingPolicy:{
         "Type":"String",
-        "Default":"NONE"
+        "Default":"EMPTY"
     },
     "ConfigFramework":{
         "Type":"String",
