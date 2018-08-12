@@ -24,11 +24,15 @@ exports.handler=function(event,context,callback){
                 var record=message
                 var source="custom" 
             }
-            var build={
-                Inference:!["MXNET","TENSORFLOW","AMAZON"]
-                    .includes(process.env.CONFIG_FRAMEWORK),
-                Training:!["MXNET","TENSORFLOW","AMAZON"]
-                    .includes(process.env.CONFIG_FRAMEWORK)
+            if(message.build){
+                var build=message.build
+            }else{
+                var build={
+                    Inference:!["MXNET","TENSORFLOW","AMAZON"]
+                        .includes(process.env.CONFIG_FRAMEWORK),
+                    Training:!["MXNET","TENSORFLOW","AMAZON"]
+                        .includes(process.env.CONFIG_FRAMEWORK)
+                }
             }
             switch(source){
                 case "custom":
