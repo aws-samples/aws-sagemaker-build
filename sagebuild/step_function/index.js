@@ -6,6 +6,7 @@ var params=require('../info/parameters')
 var params=Object.assign(_.fromPairs(Object.keys(params)
     .filter(x=>params[x].Type!=="CommaDelimitedList")
     .filter(x=>x!=="HyperParameters")
+    .filter(x=>x!=="Parameters")
     .map(x=>[x.toLowerCase(),`\${${x}}`])),
     {
         "maxtrainingjobs":1,
@@ -58,6 +59,15 @@ module.exports=Object.assign(
             "Type" :"String",
             "Value" :{"Fn::Sub":JSON.stringify(params)
                 .replace(/"HyperParameters"/,"${HyperParameters}")}
+        }
+    },
+    "ParameterStoreOverride":{
+        "Type": "Custom::ParamterUpdate",
+        "DependsOn":["ParameterStore","CFNLambdaPolicy"],
+        "Properties": {
+            "ServiceToken": { "Fn::GetAtt" : ["ParameterUpdateLambda", "Arn"] },
+            "name":{"Ref":"ParameterStore"},
+            "value":{"Ref":"Parameters"}
         }
     },
     "VersionParameterStore":{

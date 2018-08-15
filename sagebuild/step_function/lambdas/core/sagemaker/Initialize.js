@@ -22,9 +22,14 @@ exports.handler=(event,context,cb)=>{
             
             var params=JSON.parse(results[0].Parameter.Value)
             var version=(parseInt(results[1].Parameter.Value)+1).toString()
-            
+            if(params.TrainingImage){
+                params.build.Training=false
+            }
+            if(params.InferenceImage){
+                params.build.Inference=false
+            }
             var name=`${params.stackname}-v${version}`
-            Object.assign(params,event,{
+            Object.assign(event,params,{
                 timestamp:new Date(),
                 version,
                 id:Date.now().toString(),
@@ -33,7 +38,7 @@ exports.handler=(event,context,cb)=>{
                 InferenceTag:`${name}-Inference`
             })
             cb(null,{
-                params,
+                params:event,
                 args:{
                     build:{
                         Training:{},

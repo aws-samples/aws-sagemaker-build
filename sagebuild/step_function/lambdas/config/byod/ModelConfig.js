@@ -9,7 +9,7 @@ exports.handler=(event,context,callback)=>{
             ExecutionRoleArn:event.params.modelrole,
             ModelName:`${event.params.name}-${event.params.id}`,
             PrimaryContainer:{
-                Image:`${event.params.accountid}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${event.params.ecrrepo}:Inference_v${event.params.version}`,
+                Image:event.params.InferenceImage || `${event.params.accountid}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${event.params.ecrrepo}:Inference_v${event.params.version}`,
                 ModelDataUrl:event.status.training.ModelArtifacts.S3ModelArtifacts,
                 Environment:event.params.modelhostingenvironment
             },

@@ -2,14 +2,15 @@ import json
 import os
 def handler(event,context):
     print(json.dumps(event,indent=2))
+    image=event["params"].get("TrainingImage","{}.dkr.ecr.{}.amazonaws.com/{}:Training_v{}".format(
+        event["params"]["accountid"],
+        os.environ["AWS_REGION"],
+        event["params"]["ecrrepo"],
+        event["params"]["version"]
+    ))
     return {
       "AlgorithmSpecification": { 
-        "TrainingImage":"{}.dkr.ecr.{}.amazonaws.com/{}:Training_v{}".format(
-            event["params"]["accountid"],
-            os.environ["AWS_REGION"],
-            event["params"]["ecrrepo"],
-            event["params"]["version"]
-        ), 
+        "TrainingImage":image, 
         "TrainingInputMode":event["params"]["inputmode"]
       },
       "InputDataConfig": [ 
