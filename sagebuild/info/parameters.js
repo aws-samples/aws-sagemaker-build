@@ -11,6 +11,10 @@ var deployConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/core/`)
     .map(x=>x.toUpperCase())
 
 module.exports={
+    Parameters:{
+        "Type":"String",
+        "Default":"{}"
+    },
     AssetBucket:{
         "Type":"String",
     },

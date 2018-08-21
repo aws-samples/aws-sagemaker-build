@@ -55,6 +55,14 @@ module.exports=Object.assign(
                 "ecr:*"
               ],
               "Resource":"*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ssm:Get*",
+                "ssm:Put*"
+              ],
+              "Resource":{"Fn::Sub":"arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterStore}"}
             }
           ]
         }

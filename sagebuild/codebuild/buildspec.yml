@@ -10,10 +10,17 @@ phases:
       - echo Build started on `date`
       - echo "Building the Training Docker image..."
       - cd $CODEBUILD_SRC_DIR/$DOCKERFILE_PATH 
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
+      - REPO=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - |
+        if docker pull $REPO:$IMAGE_TAG; then
+            docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --cache-from $REPO:$IMAGE_TAG .
+        else
+            docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+        fi
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPO:$IMAGE_TAG      
       - echo "Pushing the Docker image..."
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker push $REPO:$IMAGE_TAG
+
   post_build:
     commands:
       - echo Build completed on `date`

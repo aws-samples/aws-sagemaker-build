@@ -17,7 +17,7 @@ exports.handler = function(event, context,callback) {
                 ecr.listImages({
                     repositoryName:event.ResourceProperties.repo,
                     nextToken:token
-                }).Promise()
+                }).promise()
                 .then(function(result){
                     return ecr.batchDeleteImage({
                         imageIds:result.imageIds,
