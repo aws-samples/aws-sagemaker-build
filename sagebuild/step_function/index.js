@@ -177,7 +177,6 @@ module.exports=Object.assign(
         },
         "Path": "/",
         "ManagedPolicyArns":[
-            "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess",
             {"Fn::If":["ExternalHostingPolicy",
                 {"Ref":"ExternalHostingPolicy"},
                 {"Ref":"AWS::NoValue"}
@@ -190,12 +189,44 @@ module.exports=Object.assign(
               "Statement": [{
                     "Effect": "Allow",
                     "Action": [
+                        "sagemaker:*",
                         "cloudwatch:PutMetricData",
                         "logs:CreateLogStream",
                         "logs:PutLogEvents",
                         "logs:CreateLogGroup",
                         "logs:DescribeLogStreams",
-                        "ecr:GetAuthorizationToken"
+                        "ecr:GetAuthorizationToken",
+                        "ecr:GetDownloadUrlForLayer",
+                        "ecr:BatchGetImage",
+                        "ecr:BatchCheckLayerAvailability",
+                        "cloudwatch:PutMetricData",
+                        "cloudwatch:PutMetricAlarm",
+                        "cloudwatch:DescribeAlarms",
+                        "cloudwatch:DeleteAlarms",
+                        "ec2:CreateNetworkInterface",
+                        "ec2:CreateNetworkInterfacePermission",
+                        "ec2:DeleteNetworkInterface",
+                        "ec2:DeleteNetworkInterfacePermission",
+                        "ec2:DescribeNetworkInterfaces",
+                        "ec2:DescribeVpcs",
+                        "ec2:DescribeDhcpOptions",
+                        "ec2:DescribeSubnets",
+                        "ec2:DescribeSecurityGroups",
+                        "application-autoscaling:DeleteScalingPolicy",
+                        "application-autoscaling:DeleteScheduledAction",
+                        "application-autoscaling:DeregisterScalableTarget",
+                        "application-autoscaling:DescribeScalableTargets",
+                        "application-autoscaling:DescribeScalingActivities",
+                        "application-autoscaling:DescribeScalingPolicies",
+                        "application-autoscaling:DescribeScheduledActions",
+                        "application-autoscaling:PutScalingPolicy",
+                        "application-autoscaling:PutScheduledAction",
+                        "application-autoscaling:RegisterScalableTarget",
+                        "logs:CreateLogGroup",
+                        "logs:CreateLogStream",
+                        "logs:DescribeLogStreams",
+                        "logs:GetLogEvents",
+                        "logs:PutLogEvents"
                     ],
                     "Resource": "*"
                 },
@@ -245,11 +276,30 @@ module.exports=Object.assign(
                     "Resource": [
                         {"Fn::Sub":"arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ECRRepo}"},
                     ]
-              }]
-            }
-        }]
-      }                
-    },
+             },
+             {
+				"Action": "iam:CreateServiceLinkedRole",
+				"Effect": "Allow",
+				"Resource": "arn:aws:iam::*:role/aws-service-role/sagemaker.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_SageMakerEndpoint",
+				"Condition": {
+					"StringLike": {
+				        "iam:AWSServiceName": "sagemaker.application-autoscaling.amazonaws.com"
+				    }
+				}
+			},
+			{
+				"Effect": "Allow",
+				"Action": ["iam:PassRole"],
+				"Resource": "*",
+				"Condition": {
+					"StringEquals": {
+						"iam:PassedToService": "sagemaker.amazonaws.com"
+					}
+				}
+            }]
+        }
+      }]                
+    }},
     TrainingRole:{
       "Type": "AWS::IAM::Role",
       "Properties": {

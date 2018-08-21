@@ -15,7 +15,7 @@ exports.handler=function(event,context,callback){
         .then(function(result){
             console.log(JSON.stringify(result,null,2))
             value=JSON.parse(result.Parameter.Value)
-            Object.assign(value,JSON.parse(params.value))
+            value=assign(value,JSON.parse(params.value))
             return ssm.putParameter({
                 Name:params.name,
                 Type:result.Parameter.Type,
@@ -33,3 +33,33 @@ exports.handler=function(event,context,callback){
     }
 }
 
+function isObject(item) {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
+function isShallow(item) {
+  return Array.isArray(item) && item.find((item) => typeof item === 'object') ? false : true;
+}
+
+function assign(target, ...sources) {
+
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        assign(target[key], source[key]);
+      } else {
+        if (isShallow(source[key])) Object.assign(target, { [key]: source[key] });
+        else {
+          if (!target[key]) Object.assign(target, { [key]: [] });
+          Object.assign(target, { [key]: source[key].map((item, index) => assign(target[key][index] || {}, item)) });
+        }
+      }
+    }
+  }
+
+  return assign(target, ...sources);
+}
