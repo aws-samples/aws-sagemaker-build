@@ -5,7 +5,7 @@ export AWS_PROFILE=$(node -e "console.log(require('$__dirname'+'/../../config').
 export AWS_DEFAULT_REGION=$(node -e "console.log(require('$__dirname'+'/../../config').region)")
 
 BUCKET=$(node -e "console.log(require('$__dirname'+'/../../config').templateBucket)")
-PREFIX="sagebuild"
+PREFIX=$(node -e "console.log(require('$__dirname'+'/../../config').templatePrefix)")
 
 BLUE=$(tput setaf 4)
 RESET=$(tput sgr0)

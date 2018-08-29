@@ -135,7 +135,7 @@ module.exports={
         },
         "Environment":{
             Variables:{
-                ENDPOINT:{"Ref":"AWS::StackName"},
+                ENDPOINT:{"Fn::GetAtt":["Variables","EndpointName"]},
             }
         },
         "Handler": "index.handler",
@@ -162,7 +162,8 @@ module.exports={
         },
         "Path": "/",
         "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
         ]
       }
     },
@@ -184,7 +185,7 @@ module.exports={
         "Path": "/",
         "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-            "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
+            "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess",
         ]
       }
     }

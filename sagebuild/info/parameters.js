@@ -1,5 +1,6 @@
 var fs=require('fs')
 var _=require('lodash')
+var config=require('../../config')
 var stateMachines=require('../step_function/stateMachines')
 var machines=stateMachines.machines
 var frameworkConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/config/`)
@@ -13,31 +14,39 @@ var deployConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/core/`)
 module.exports={
     Parameters:{
         "Type":"String",
-        "Default":"{}"
+        "Default":"{}",
+        "Description":"A JSON string that is merged into the SSM parameter store holding build parameters.",
     },
     AssetBucket:{
         "Type":"String",
+        "Description":"the S3 bucket that holds the stack resources. Do not change unless you know what you are doing.",
+        "Default":config.templateBucket
     },
     AssetPrefix:{
         "Type":"String",
-        "Default":"sagebuild"
+        "Description":"the S3 path that holds the stack resources. Do not change unless you know what you are doing.",
+        "Default":config.templatePrefix
     },
     ExternalTrainingPolicy:{
         "Type":"String",
+        "Description":"(Optional) the Arn of an IAM policy that is added to the Training role sagemaker uses",
         "Default":"EMPTY"
     },
     ExternalHostingPolicy:{
         "Type":"String",
+        "Description":"(Optional) the Arn of an IAM policy that is added to the Model role sagemaker uses",
         "Default":"EMPTY"
     },
     "ConfigFramework":{
         "Type":"String",
+        "Description":"The Configuration of the stack.",
         "Default":"BYOD",
         "AllowedValues":frameworkConfigs
     },
     "ConfigDeploy":{
         "Type":"String",
         "Default":"SAGEMAKER",
+        "Description":"The Type of deployment to use.",
         "AllowedValues":deployConfigs
     },
     "Type":{
@@ -49,13 +58,8 @@ module.exports={
     "NoteBookInstanceType":{
         "Type":"String",
         "Default":"ml.t2.medium",
-        "AllowedValues":["ml.t2.medium","ml.m4.xlarge","ml.p2.xlarge","USE_EXTERNAL"],
+        "AllowedValues":["ml.t2.medium","ml.m4.xlarge","ml.p2.xlarge","NONE"],
         "Description":"The SageMaker Notebook Instance type that will be created and pre-populated with a sagebuild tutorial notebook"
-    },
-    "ExternalNotebook":{
-        "Type":"String",
-        "Default":"EMPTY",
-        "Description":"(Optional) A SageMaker Notebook instance to be pre-populated with a sagebuild tutorial notebook"
     },
     "ExternalDataBucket":{
         "Type":"String",
@@ -85,18 +89,21 @@ module.exports={
     "BranchBuildTrigger":{
         "Type":"CommaDelimitedList",
         "Default":"master",
-        "Description":"Comma seperated list of branchs in the code repository that trigger a build when changed"
+        "Description":"(Optional) Comma seperated list of branchs in the code repository that trigger a build when changed"
     },
     "EndpointConfigLambda":{
         "Type":"String",
+        "Description":"The Arn of a Lambda function to override the default Endpoint Config lambda",
         "Default":"EMPTY"
     },
     "TrainingConfigLambda":{
         "Type":"String",
+        "Description":"The Arn of a Lambda function to override the default Training Config lambda",
         "Default":"EMPTY"
     },
     "ModelConfigLambda":{
         "Type":"String",
+        "Description":"The Arn of a Lambda function to override the default Model Config lambda",
         "Default":"EMPTY"
     }
 }

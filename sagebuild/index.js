@@ -23,17 +23,12 @@ module.exports={
     ])),
     stateMachines.conditions,
   {
-    "InternalNoteBookInstance":notEqual("NoteBookInstanceType","USE_EXTERNAL"),
-    "ExternalNoteBookInstance":notEmpty("ExternalNotebook"),
     "ExternalHostingPolicy":notEmpty("ExternalHostingPolicy"),
     "ExternalTrainingPolicy":notEmpty("ExternalTrainingPolicy"),
     "ExternalEndpointConfigLambda":notEmpty("EndpointConfigLambda"),
     "ExternalTrainingConfigLambda":notEmpty("TrainingConfigLambda"),
     "ExternalModelConfigLambda":notEmpty("ModelConfigLambda"),
-    "NoteBookInstance":{"Fn::Or":[
-        notEqual("NoteBookInstanceType","USE_EXTERNAL"),
-        notEmpty("ExternalNotebook")
-    ]},
+    "NoteBookInstance":notEqual("NoteBookInstanceType","NONE"),
     "CreateDataBucket":equal("ExternalDataBucket","CREATE_BUCKET"),
     "CreateRepo":{"Fn::And":[
         equal("ExternalCodeCommitRepo","CREATE_REPO"),
@@ -64,11 +59,7 @@ module.exports={
         Condition:"NoteBookInstance",
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["VariableLambda", "Arn"] },
-            "Name":{"Fn::If":[
-                "InternalNoteBookInstance",
-                {"Ref":"AWS::StackName"},
-                {"Ref":"ExternalNotebook"}
-            ]}
+            "Name":{"Ref":"AWS::StackName"}
         }
     },
     "LambdaVariables":{

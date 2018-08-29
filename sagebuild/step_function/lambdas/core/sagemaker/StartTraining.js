@@ -9,6 +9,7 @@ exports.handler=(event,context,cb)=>{
         Key:"sagebuild:BuildStack",
         Value:event.params.stackname
     })
+
     sagemaker.createTrainingJob(event.args.training).promise()
     .then(result=>cb(null,result))
     .catch(x=>cb(new Error(x)))

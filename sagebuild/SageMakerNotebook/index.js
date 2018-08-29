@@ -5,7 +5,7 @@ var _=require('lodash')
 module.exports={
     "SageMakerNotebookInstance":{
         "Type": "AWS::SageMaker::NotebookInstance",
-        Condition:"InternalNoteBookInstance",
+        Condition:"NoteBookInstance",
         "Properties": {
             InstanceType:"ml.t2.medium",
             NotebookInstanceName:{"Fn::GetAtt":["Notebook","Name"]},
@@ -15,6 +15,7 @@ module.exports={
     },
     "SageMakerNotebookLifecycle":{
         "Type" : "AWS::SageMaker::NotebookInstanceLifecycleConfig",
+        Condition:"NoteBookInstance",
         "Properties" : {
             OnCreate:[{
                 Content:{"Fn::Base64":{"Fn::Sub":fs.readFileSync(`${__dirname}/scripts/OnCreate.sh`,"utf-8")}}
@@ -23,7 +24,7 @@ module.exports={
     },
     "InternalNotebookRole":{
       "Type": "AWS::IAM::Role",
-      Condition:"InternalNoteBookInstance",
+      Condition:"NoteBookInstance",
       "Properties":{
             "AssumeRolePolicyDocument": {
               "Version": "2012-10-17",
@@ -44,23 +45,10 @@ module.exports={
             ]
           }
     },
-    "ExternalNotebookRole":{
-        "Type": "Custom::Variables",
-        Condition:"ExternalNoteBookInstance",
-        "Properties": {
-            "ServiceToken": {"Fn::GetAtt" : ["SageMakerNotebookRoleLambda", "Arn"]},
-            "NotebookInstanceName":{"Fn::GetAtt":["Notebook","Name"]}
-        }
-    },
     "NotebookPolicy":{
       "Type": "AWS::IAM::ManagedPolicy",
       Condition:"NoteBookInstance",
       "Properties": {
-        Roles:[{"Fn::If":[
-            "InternalNoteBookInstance",
-            {"Ref":"AWS::NoValue"},
-            {"Ref":"ExternalNotebookRole"}
-        ]}],
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [{

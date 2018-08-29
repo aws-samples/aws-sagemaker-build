@@ -1,33 +1,32 @@
 module.exports={
     "ParameterGroups":[{
         "Label":{"default":"General Parameters"},
-        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","TrainEntryPoint",
-        "TrainInstanceCount","TrainInstanceType","TrainSourceDir","TrainVolumeSize","InputMode","HostEntryPoint","HostSourceDir","ContainerLogLevel","HyperParameters","ModelHostingEnvironment","ConfigFramework","ConfigDeploy","Type","TrainMaxRun"]
-    },{
-        "Label":{"default":"MXNet Parameters"},
-        "Parameters":["PyVersion","EnableCloudwatchMetrics"]
-    },{
-        "Label":{"default":"Tensorflow Parameters"},
-        "Parameters":["EvaluationSteps","RequirementsFile","CheckpointPath"]
+        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters"]
     },{
         "Label":{"default":"Data Bucket Configuration"},
         "Parameters":["ExternalDataBucket","ExternalLaunchTopic"]
     },{
         "Label":{"default":"Repository Configuration"},
-        "Parameters":["BranchBuildTrigger","ExternalCodeCommitRepo","ExternalGithubRepo",]
+        "Parameters":["BranchBuildTrigger","ExternalCodeCommitRepo","ExternalGithubRepo","ExternalCodeBucket"]
     },{
         "Label":{"default":"Notebook Instance  Configuration"},
-        "Parameters":["Type","NoteBookInstanceType","ExternalNotebook"]
+        "Parameters":["Type","NoteBookInstanceType"]
     },{
         "Label":{"default":"Lambda Hook Configuration"},
-        "Parameters":["EndpointConfigLambda","InferenceDockerfilePathLambda","TrainingDockerfilePathLambda","TrainingConfigLambda","ModelConfigLambda"]
+        "Parameters":["EndpointConfigLambda","TrainingConfigLambda","ModelConfigLambda"]
     }],
     "ParameterLabels":{
+        "ExternalTrainingPolicy":{"default":"Additional Training IAM Policy"},
+        "ExternalHostingPolicy":{"default":"Additional Hosting IAM Policy"},
+        "ConfigFramework":{"default":"Configuration"},
+        "EndpointConfigLambda":{"default":"Endpoint Config Lambda Override"},
+        "TrainingConfigLambda":{"default":"Training Config Lambda Override"},
+        "ModelConfigLambda":{"default":"Model Config Lambda Override"},
+        "ExternalCodeBucket":{"default":"External Code Bucket"},
         "NoteBookInstanceType":{"default":"SageMaker Notebook Instance Type"},
-        "ExternalNotebook":{"default":"External SageMaker Notebookt to use"},
-        "ExternalDataBucket":{"default":"Training Data Bucket"},
+        "ExternalDataBucket":{"default":"External Training Data Bucket"},
         "BranchBuildTrigger":{"default":"Repository trigger branch"},
-        "ExternalCodeCommitRepo":{"default":"AWS CodeCommit Repository"},
+        "ExternalCodeCommitRepo":{"default":"External AWS CodeCommit Repository"},
         "ExternalGithubRepo":{"default":"External Github Repository"},
         "ExternalLaunchTopic":{"default":"Additional SNS Launch Topic"},
         "Type":{"default":"Type of Pipeline"}

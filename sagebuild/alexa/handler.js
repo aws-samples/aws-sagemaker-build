@@ -116,7 +116,7 @@ function date(string){
     var time=d.toUTCString().match(/.*, \S* \S* \S* (\S*:\S*):.*/)[1]
     return `${tmp} at ${time} UTC`
 }
-function Response(callback){
+function Response(callback,end=false){
     return function(message){
         callback(null,{
             version: "1.0",
@@ -126,7 +126,7 @@ function Response(callback){
                     type: "PlainText",
                     text: message
                 },
-                shouldEndSession:true
+                shouldEndSession:end
             }
         })
     }
