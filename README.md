@@ -39,8 +39,58 @@ template is written to /cloudformation/build/template.json
 ## Architecture
 
 - The following diagram describes the flow of the Step Function StateMachine. There are several points where the StateMachine has to poll and wait for a task to complete.
-![statemachine diagram](./assets/StateMachineFlow.png)
+![statemachine diagram](./assets/StateMachineFlow.png | width=400)
 - The following diagram shows how the services work together
-![service diagram](./assets/Architecture.png)
+![service diagram](./assets/Architecture.png | width=400)
 
+## Parameters
+AWS Systems Manager Parameter Store provides a durable, centralized, and scalable data store. We will store the parameters of our training jobs and deployment here and the Step Function's Lambda functions will query the parameters from this store. To change the parameters you just change the JSON string in the store. The example notebooks included with aws-sagemaker-build show how to do this. 
 
+### Common 
+- hyperparameters: default=HyperParameters,
+- hostinstancecount: default=1,
+- hostinstancetype: default=ml.t2.medium,
+- traininstancecount: default=1,
+- traininstancetype: default=ml.m5.large,
+- trainvolumesize: default=10,
+- trainmaxrun: default=4,
+- inputmode: default=File,
+- modelhostingenvironment: default={}
+- hyperparameters: default={},
+
+### BYOD
+- dockerfile_path_Training:
+- dockerfile_path_Inference:
+- train: default=true
+- build: default={Inference:true, Training:true}
+- TrainingImage:
+
+### TensorFlow
+- tensorflowversion: default=1.8,
+- trainingsteps: default=1000,
+- evaluationsteps: default=100,
+- requirementsfile: default=none,
+- trainentrypoint: default=none,
+- trainsourcefile: default=none,
+- pyversion: default=py3,
+- hostentrypoint: default=none,
+- hostsourcefile: default=none,
+- enablecloudwatchmetrics: default=false,
+- containerloglevel: default=200,
+
+### MXNET
+- mxnetversion: default=1.1,
+- trainentrypoint: default=none,
+- trainsourcefile: default=none,
+- pyversion: default=py3,
+- hostentrypoint: default=none,
+- hostsourcefile: default=none,
+- enablecloudwatchmetrics: default=false,
+- containerloglevel: default=200,
+
+### HPO
+- maxtrainingjobs: default=1,
+- maxparalleltrainingjobs: default=1,
+
+### Amazon Algorithms
+- algorithm:
