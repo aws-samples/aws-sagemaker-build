@@ -15,10 +15,11 @@ Automating the build and deployment of machine learning models is an important s
 ```shell
 npm install
 ```
+1. copy config.js.example to config.js
 
-2. create an s3 bucket. [instructions](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-get-location-example.html). open up config.js and set templateBucket  and AssetBucket to the name of your s3 bucket.
+1. create an s3 bucket. [instructions](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-get-location-example.html). open up config.js and set templateBucket  and AssetBucket to the name of your s3 bucket.
 
-3. launch stack
+1. launch stack
 ```shell
 npm run up
 ```
