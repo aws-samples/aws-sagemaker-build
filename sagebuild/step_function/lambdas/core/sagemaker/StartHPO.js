@@ -46,7 +46,10 @@ exports.handler=(event,context,cb)=>{
         })
         args={
             HyperParameterTuningJobConfig:{
-                HyperParameterTuningJobObjective:event.params.tuningobjective,
+                HyperParameterTuningJobObjective:{
+                    MetricName:event.params.tuningobjective.Name,
+                    Type:event.params.tuningobjective.Type
+                },
                 ParameterRanges:{
                     CategoricalParameterRanges:hyperParams.catagorical,
                     ContinuousParameterRanges:hyperParams.continuous,
@@ -58,16 +61,22 @@ exports.handler=(event,context,cb)=>{
                 },
                 Strategy:"Bayesian"
             },
-            HyperParameterTuningJobName:old_args.TrainingJobName,
+            HyperParameterTuningJobName:old_args.TrainingJobName.slice(0,32),
             TrainingJobDefinition:{
-                AlgorithmSpecification:old_args.AlgorithmSpecification,
+                AlgorithmSpecification:{
+                    TrainingImage:old_args.AlgorithmSpecification.TrainingImage,
+                    TrainingInputMode:old_args.AlgorithmSpecification.TrainingInputMode,
+                    MetricDefinitions:[{
+                        Name:event.params.tuningobjective.Name,
+                        Regex:event.params.tuningobjective.Regex
+                    }]
+                },
                 InputDataConfig:old_args.InputDataConfig,
                 OutputDataConfig:old_args.OutputDataConfig,
                 ResourceConfig:old_args.ResourceConfig,
                 RoleArn:old_args.RoleArn,
                 StoppingCondition:old_args.StoppingCondition,
                 StaticHyperParameters:hyperParams.static,
-                VpcConfig:old_args.VpcConfig,
             },
             Tags:old_args.Tags
         }

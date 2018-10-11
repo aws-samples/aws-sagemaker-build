@@ -6,7 +6,7 @@ exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
     
     sagemaker.describeHyperParameterTuningJob({
-        HyperParameterTuningJobName:event.args.training.TrainingJobName
+        HyperParameterTuningJobName:event.args.training.TrainingJobName.slice(0,32)
     }).promise()
     .then(result=>{
         cb(null,result)
