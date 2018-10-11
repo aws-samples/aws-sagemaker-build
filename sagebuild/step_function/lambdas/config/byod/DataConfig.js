@@ -6,7 +6,7 @@ exports.handler=function(event,context,callback){
     try{
         var channels=event.params.channels
         var out=Object.keys(channels).map(function(key){
-            return {
+            var out={
               "ChannelName":key, 
               "DataSource": { 
                 "S3DataSource": { 
@@ -16,8 +16,12 @@ exports.handler=function(event,context,callback){
                 }
               },
               "CompressionType": "None",
-              "RecordWrapperType": "None" 
+              "RecordWrapperType": "None"
             }
+            if(channels[key].contentType){
+                out.ContentType=channels[key].contentType
+            }
+            return out
         })
         
         callback(null,out)

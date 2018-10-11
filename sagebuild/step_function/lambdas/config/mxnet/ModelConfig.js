@@ -5,7 +5,12 @@ var s3=new aws.S3()
 
 exports.handler=(event,context,callback)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    
+    if(event.status.training.ModelArtifacts){
+        var ModelDataUrl=event.status.training.ModelArtifacts.S3ModelArtifacts 
+    }else{
+        var ModelDataUrl=`${event.status.training.TrainingJobDefinition.OutputDataConfig.S3OutputPath}/${event.status.training.BestTrainingJob.TrainingJobName}/output/model.tar.gz`
+    }
+   
     var key= `versions/inference/v${event.params.version}.tar.gz`
     s3.copyObject({
         CopySource:event.params.hostsourcefile.match(/s3:\/\/(.*)/)[1],
@@ -18,7 +23,7 @@ exports.handler=(event,context,callback)=>{
             ModelName:`${event.params.name}-${event.params.id}`,
             PrimaryContainer:{
                 Image:create_image_uri(event.params),
-                ModelDataUrl:event.status.training.ModelArtifacts.S3ModelArtifacts,
+                ModelDataUrl,
                 Environment:Object.assign({
                     SAGEMAKER_CONTAINER_LOG_LEVEL:event.params.containerloglevel,
                     SAGEMAKER_ENABLE_CLOUDWATCH_METRICS:event.params.enablecloudwatchmetrics,

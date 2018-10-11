@@ -110,11 +110,11 @@ module.exports=Object.assign(
     "checkHPOStatus":{
         Type:"Choice",
         Choices:[{
-            Variable:`$.status.training.TrainingJobDefinition.HyperParameterTuningJobStatus`,
+            Variable:`$.status.training.HyperParameterTuningJobStatus`,
             StringEquals:"InProgress",
             Next:`waitForTraining` 
         },{
-            Variable:`$.status.training.TrainingJobDefinition.HyperParameterTuningJobStatus`,
+            Variable:`$.status.training.HyperParameterTuningJobStatus`,
             StringEquals:"Completed",
             Next:`getModelConfig` 
         }],
