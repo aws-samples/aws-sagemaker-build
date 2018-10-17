@@ -39,10 +39,10 @@ template is written to /cloudformation/build/template.json
 
 ## Architecture
 
-- The following diagram describes the flow of the Step Function StateMachine. There are several points where the StateMachine has to poll and wait for a task to complete.
-![statemachine diagram](./assets/StateMachineFlow.png | width=400)
-- The following diagram shows how the services work together
-![service diagram](./assets/Architecture.png | width=400)
+#### The following diagram describes the flow of the Step Function StateMachine. There are several points where the StateMachine has to poll and wait for a task to complete.
+![statemachine diagram](assets/StateMachineFlow.png)
+#### The following diagram shows how the services work together
+![service diagram](assets/Architecture.png)
 
 ## Parameters
 AWS Systems Manager Parameter Store provides a durable, centralized, and scalable data store. We will store the parameters of our training jobs and deployment here and the Step Function's Lambda functions will query the parameters from this store. To change the parameters you just change the JSON string in the store. The example notebooks included with aws-sagemaker-build show how to do this. 
