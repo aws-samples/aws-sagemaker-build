@@ -23,6 +23,10 @@ module.exports={
     ])),
     stateMachines.conditions,
   {
+    "BucketTrigger":{"Fn::And":[
+        equal("BucketTriggerBuild","True"),
+        {"Condition":"CreateDataBucket"}
+    ]},
     "ExternalHostingPolicy":notEmpty("ExternalHostingPolicy"),
     "ExternalTrainingPolicy":notEmpty("ExternalTrainingPolicy"),
     "ExternalEndpointConfigLambda":notEmpty("EndpointConfigLambda"),
@@ -34,7 +38,7 @@ module.exports={
         equal("ExternalCodeCommitRepo","CREATE_REPO"),
         equal("ExternalGithubRepo","USE_CODECOMMIT_REPO")
     ]},
-    "CreateRepoTrigger":notEqual("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
+    "CreateRepoTrigger":notEqual("BranchBuildTrigger","EMPTY"),
     "UseCodeBucket":notEmpty("ExternalCodeBucket"),
     "IsCodeCommitRepo":equal("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
     "SubscribeToExternalTopic":notEqual("ExternalLaunchTopic","EMPTY"),
@@ -109,6 +113,15 @@ module.exports={
                     {"Fn::Sub":"https://codecommit.us-east-1.amazonaws.com/v1/repos/${ExternalCodeCommitRepo}"}
                 ]},
                 {"Ref":"ExternalGithubRepo"}
+            ]},
+            "RepoArn":{"Fn::If":[
+                "IsCodeCommitRepo",
+                {"Fn::If":[
+                    "CreateRepo",
+                    {"Fn::GetAtt":["CodeRepo","Arn"]},
+                    {"Fn::Sub":"arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:${ExternalCodeCommitRepo}"}
+                ]},
+                {"Ref":"AWS::NoValue"}
             ]}
         }
     }},

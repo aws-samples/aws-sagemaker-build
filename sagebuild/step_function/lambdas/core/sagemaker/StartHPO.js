@@ -1,9 +1,11 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
+var crypto = require('crypto');
 var sagemaker=new aws.SageMaker()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
+    var shasum = crypto.createHash('sha1');
     try{
         event.args.training.Tags=event.args.training.Tags || []
         event.args.training.Tags.push({
@@ -44,6 +46,8 @@ exports.handler=(event,context,cb)=>{
                 hyperParams.static[key]=val
             }
         })
+        shasum.update(old_args.TrainingJobName);
+
         args={
             HyperParameterTuningJobConfig:{
                 HyperParameterTuningJobObjective:{
@@ -61,15 +65,11 @@ exports.handler=(event,context,cb)=>{
                 },
                 Strategy:"Bayesian"
             },
-            HyperParameterTuningJobName:old_args.TrainingJobName.slice(0,32),
+            HyperParameterTuningJobName:shasum.digest('hex').slice(0,32),
             TrainingJobDefinition:{
                 AlgorithmSpecification:{
                     TrainingImage:old_args.AlgorithmSpecification.TrainingImage,
-                    TrainingInputMode:old_args.AlgorithmSpecification.TrainingInputMode,
-                    MetricDefinitions:[{
-                        Name:event.params.tuningobjective.Name,
-                        Regex:event.params.tuningobjective.Regex
-                    }]
+                    TrainingInputMode:old_args.AlgorithmSpecification.TrainingInputMode
                 },
                 InputDataConfig:old_args.InputDataConfig,
                 OutputDataConfig:old_args.OutputDataConfig,
@@ -79,6 +79,12 @@ exports.handler=(event,context,cb)=>{
                 StaticHyperParameters:hyperParams.static,
             },
             Tags:old_args.Tags
+        }
+        if(event.params.tuningobjective.Regex){
+            args.TrainingJobDefinition.AlgorithmSpecification.MetricDefinitions=[{
+                Name:event.params.tuningobjective.Name,
+                Regex:event.params.tuningobjective.Regex
+            }]
         }
         console.log(JSON.stringify(args,null,2))
         sagemaker.createHyperParameterTuningJob(args).promise()

@@ -63,7 +63,7 @@ module.exports=Object.assign(
     },
     "ParameterStoreOverride":{
         "Type": "Custom::ParamterUpdate",
-        "DependsOn":["ParameterStore","CFNLambdaPolicy"],
+        "DependsOn":["CFNLambdaPolicy"],
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["ParameterUpdateLambda", "Arn"] },
             "name":{"Ref":"ParameterStore"},
@@ -82,7 +82,7 @@ module.exports=Object.assign(
         "DependsOn":["CFNLambdaPolicy","EndpointConfigClear"],
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["SageMakerClearModelLambda", "Arn"] },
-            "name":{"Fn::Sub":"${AWS::StackName}-"}
+            "name":{"Fn::Sub":"${AWS::StackName}"}
         }
     },
     "EndpointConfigClear":{
@@ -90,7 +90,7 @@ module.exports=Object.assign(
         "DependsOn":["CFNLambdaPolicy","EndpointClear"],
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["SageMakerClearEndpointConfigLambda", "Arn"] },
-            "name":{"Fn::Sub":"${AWS::StackName}-"}
+            "name":{"Fn::Sub":"${AWS::StackName}"}
         }
     },
     "EndpointClear":{

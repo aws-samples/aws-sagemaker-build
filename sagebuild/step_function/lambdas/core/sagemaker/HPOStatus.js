@@ -4,9 +4,9 @@ var sagemaker=new aws.SageMaker()
 
 exports.handler=(event,context,cb)=>{
     console.log("EVENT:",JSON.stringify(event,null,2))
-    
+
     sagemaker.describeHyperParameterTuningJob({
-        HyperParameterTuningJobName:event.args.training.TrainingJobName.slice(0,32)
+        HyperParameterTuningJobName:event.outputs.training.HyperParameterTuningJobArn.split('/')[1]
     }).promise()
     .then(result=>{
         cb(null,result)

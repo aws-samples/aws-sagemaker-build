@@ -83,7 +83,7 @@ module.exports={
                 "Action" : "sns:Publish",
                 "Resource" : { "Ref" : "LaunchTopic" },
                 "Condition":{
-                    ArnLike:{"AWS:SourceArn":{"Fn::GetAtt":["CodeRepo","Arn"]}}
+                    ArnLike:{"AWS:SourceArn":{"Fn::GetAtt":["Variables","RepoArn"]}}
                 }
                 }]
             },
@@ -93,7 +93,7 @@ module.exports={
     "DataBucketSNS":{
         "Type": "Custom::S3Notification",
         "DependsOn":["CFNLambdaPolicy","LaunchTopicPolicy"],
-        Condition:"CreateDataBucket",
+        Condition:"BucketTrigger",
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["S3NotificationLambda", "Arn"] },
             "Bucket":{"Fn::GetAtt":["Variables","DataBucket"]},
@@ -121,7 +121,7 @@ module.exports={
             }
         },
         "Handler": "index.handler",
-        "MemorySize": "128",
+        "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["LaunchLambdaRole","Arn"]},
         "Runtime": "nodejs6.10",
         "Timeout": 60
@@ -139,7 +139,7 @@ module.exports={
             }
         },
         "Handler": "index.handler",
-        "MemorySize": "128",
+        "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["RollbackLambdaRole","Arn"]},
         "Runtime": "nodejs6.10",
         "Timeout": 60

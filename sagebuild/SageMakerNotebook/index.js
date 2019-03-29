@@ -81,7 +81,7 @@ module.exports={
           },{
               "Effect": "Allow",
               "Action": ["codecommit:*"],
-              "Resource":[{"Fn::GetAtt":["CodeRepo","Arn"]}]
+              "Resource":[{"Fn::GetAtt":["Variables","RepoArn"]}]
           },{
               "Effect": "Allow",
               "Action": ["sagemaker:InvokeEndpoint"],
