@@ -15,6 +15,10 @@ module.exports=Object.assign(
         },{
             Variable:`$.params.train`,
             BooleanEquals:false,
+            Next:`getModelConfig` 
+        },{
+            Variable:`$.params.skiptrain`,
+            BooleanEquals:true,
             Next:`getArtifact` 
         }],
         Default:`getTrainingConfig`

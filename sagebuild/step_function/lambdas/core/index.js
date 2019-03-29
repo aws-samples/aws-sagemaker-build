@@ -27,7 +27,7 @@ function lambda(name){
             "ZipFile":info.code
         },
         "Handler":"index.handler",
-        "MemorySize": "128",
+        "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["StepLambdaRole","Arn"]},
         "Runtime": info.runtime,
         "Timeout": 60

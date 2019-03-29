@@ -43,6 +43,12 @@ module.exports={
         "Default":"BYOD",
         "AllowedValues":frameworkConfigs
     },
+    "BucketTriggerBuild":{
+        "Type":"String",
+        "Description":"If new data uploaded to data bucket should trigger a rebuild",
+        "Default":"False",
+        "AllowedValues":["True","False"]
+    },
     "ConfigDeploy":{
         "Type":"String",
         "Default":"SAGEMAKER",
@@ -87,9 +93,9 @@ module.exports={
         "Description":"(Optional) Http clone URL of a Github repository that contians Dockerfile code."
     },
     "BranchBuildTrigger":{
-        "Type":"CommaDelimitedList",
-        "Default":"master",
-        "Description":"(Optional) Comma seperated list of branchs in the code repository that trigger a build when changed"
+        "Type":"String",
+        "Default":"EMPTY",
+        "Description":"(Optional) branch in the code repository that triggers a build when changed, leave value to EMPTY to not create a build trigger"
     },
     "EndpointConfigLambda":{
         "Type":"String",

@@ -4,7 +4,7 @@ module.exports={
         "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters"]
     },{
         "Label":{"default":"Data Bucket Configuration"},
-        "Parameters":["ExternalDataBucket","ExternalLaunchTopic"]
+        "Parameters":["ExternalDataBucket","ExternalLaunchTopic","BucketTriggerBuild"]
     },{
         "Label":{"default":"Repository Configuration"},
         "Parameters":["BranchBuildTrigger","ExternalCodeCommitRepo","ExternalGithubRepo","ExternalCodeBucket"]
@@ -16,6 +16,7 @@ module.exports={
         "Parameters":["EndpointConfigLambda","TrainingConfigLambda","ModelConfigLambda"]
     }],
     "ParameterLabels":{
+        "BucketTriggerBuild":{"default":"Data Bucket Trigger"},
         "ExternalTrainingPolicy":{"default":"Additional Training IAM Policy"},
         "ExternalHostingPolicy":{"default":"Additional Hosting IAM Policy"},
         "ConfigFramework":{"default":"Configuration"},

@@ -80,7 +80,7 @@ function lambda(name){
             "ZipFile":result.code
         },
         "Handler": "index.handler",
-        "MemorySize": "128",
+        "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["CFNLambdaRole","Arn"]},
         "Runtime": "nodejs6.10",
         "Timeout": 60

@@ -17,7 +17,7 @@ module.exports={
             "ServiceToken": { "Fn::GetAtt" : ["CodeCommitTriggerLambda", "Arn"] },
             "repositoryName":{"Fn::GetAtt":["Variables","RepoName"]},
             "trigger":{
-                branches:{"Ref":"BranchBuildTrigger"},
+                branches:[{"Ref":"BranchBuildTrigger"}],
                 destinationArn:{"Ref":"LaunchTopic"},
                 events:["all"],
                 name:{"Ref":"AWS::StackName"}

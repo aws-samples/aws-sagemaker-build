@@ -64,7 +64,7 @@ function lambda(name){
                 START_TOPIC:{"Ref":"LaunchTopic"}
             }
         },
-        "MemorySize": "128",
+        "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["AlexaLambdaRole","Arn"]},
         "Runtime": "nodejs6.10",
         "Timeout": 60

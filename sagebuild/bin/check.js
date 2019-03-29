@@ -16,6 +16,7 @@ async function run(){
     var obj=require('../')
     var template=JSON.stringify(obj,null,2)
     
+    fs.writeFileSync(`${__dirname}/../build/template.json`,JSON.stringify(require('../'),null,2))
     await s3.putObject({
         Bucket:bucket,
         Key:"sagebuild.json",
