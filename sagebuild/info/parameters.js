@@ -111,5 +111,15 @@ module.exports={
         "Type":"String",
         "Description":"The Arn of a Lambda function to override the default Model Config lambda",
         "Default":"EMPTY"
+    },
+    "ETLStepFuction":{
+        "Type":"String",
+        "Default":"EMPTY",
+        "Description":"(Optional) AWS Stepfunction to run before training"
+    },
+    "PostProcessStepFuction":{
+        "Type":"String",
+        "Default":"EMPTY",
+        "Description":"(Optional) AWS Stepfunction to run after deployment"
     }
 }

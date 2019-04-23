@@ -12,8 +12,8 @@ module.exports={
         "Label":{"default":"Notebook Instance  Configuration"},
         "Parameters":["Type","NoteBookInstanceType"]
     },{
-        "Label":{"default":"Lambda Hook Configuration"},
-        "Parameters":["EndpointConfigLambda","TrainingConfigLambda","ModelConfigLambda"]
+        "Label":{"default":"Lambda and Step Function Hook Configuration"},
+        "Parameters":["EndpointConfigLambda","TrainingConfigLambda","ModelConfigLambda","ETLStepFuction","PostProcessStepFuction"]
     }],
     "ParameterLabels":{
         "BucketTriggerBuild":{"default":"Data Bucket Trigger"},
@@ -30,7 +30,9 @@ module.exports={
         "ExternalCodeCommitRepo":{"default":"External AWS CodeCommit Repository"},
         "ExternalGithubRepo":{"default":"External Github Repository"},
         "ExternalLaunchTopic":{"default":"Additional SNS Launch Topic"},
-        "Type":{"default":"Type of Pipeline"}
+        "Type":{"default":"Type of Pipeline"},
+        "ETLStepFuction":{"default":"ETL StepFunction"},
+        "PostProcessStepFuction":{"default":"Post deployment StepFunction"}
     }
 }
 

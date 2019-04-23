@@ -1,15 +1,15 @@
 var fs=require('fs')
 var _=require('lodash')
-var Promise=require('bluebird')
 var build=require('./build').build
 var train=require('./train')
 var deploy=require('./deploy')
+var step=require('./stepfunctions').step
 
 states={
     "Comment": "",
     "StartAt": "start",
     "States": Object.assign(
-        train,deploy,
+        train,deploy,step("IfTrain","ETL"),step("Success","PostProcess"),
     {
         "start":{
             Type:"Pass",
@@ -24,7 +24,7 @@ states={
             Type:"Task",
             Resource:"${StepLambdaListModels.Arn}",
             ResultPath:"$.params.models",
-            Next:"IfTrain",
+            Next:"IfETL",
         },
         "Success": {
             Type:"Task",

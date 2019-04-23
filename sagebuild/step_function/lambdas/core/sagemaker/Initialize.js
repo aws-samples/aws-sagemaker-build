@@ -47,7 +47,8 @@ exports.handler=(event,context,cb)=>{
                     training:{},
                     endpoint:{}
                 },
-                outputs:{
+                outputs:{   
+                    ETL:{},
                     build:{
                         Training:{},
                         Inference:{}
@@ -56,6 +57,7 @@ exports.handler=(event,context,cb)=>{
                     endpoint:{}
                 },
                 status:{
+                    ETL:{},
                     endpoint:{},
                     training:{},
                     build:{

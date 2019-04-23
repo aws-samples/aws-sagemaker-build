@@ -29,6 +29,8 @@ var params=Object.assign(_.fromPairs(Object.keys(params)
         "accountid":"${AWS::AccountId}",
         "codebucket":"${CodeBucket}",
         "projectname":"${ImageBuild}",
+        "ETLStepFuction":"${ETLStepFuction}",
+        "PostProcessStepFuction":"${PostProcessStepFuction}",
         trainentrypoint:"none",
         hostinstancecount:"1",
         hostinstancetype:"ml.t2.medium",

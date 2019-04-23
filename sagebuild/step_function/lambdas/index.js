@@ -47,7 +47,8 @@ module.exports=Object.assign(
                 "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess",
                 "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess",
                 "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
-                "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+                "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+                "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
             ],
             "Policies":[{
                 "PolicyName":"Access",

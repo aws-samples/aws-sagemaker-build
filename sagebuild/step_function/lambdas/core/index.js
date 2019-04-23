@@ -10,7 +10,9 @@ var lambdas=fs.readdirSync(`${__dirname}/sagemaker/`)
 
 module.exports=Object.assign(
     _.fromPairs(lambdas.map(lambda)),
+    require('./stepfunctions'),
     {})
+
 function lambda(name){
     var info=getInfo(name)
     
@@ -51,6 +53,7 @@ function getInfo(name){
     })
     var base=code.find(x=>x.type==="sagemaker")
     return {code:nextCode(0),runtime:nextRuntime(0)}
+    
     function nextCode(index){
         if(code[index]){
             return {"Fn::If":[
@@ -66,11 +69,11 @@ function getInfo(name){
         if(code[index]){
             return {"Fn::If":[
                 `ConfigDeploy${code[index].type.toUpperCase()}`,
-                code[index].js ? "nodejs6.10" : "python3.6",
+                code[index].js ? "nodejs8.10" : "python3.6",
                 nextRuntime(++index)
             ]}
         }else{
-            return base.js ? "nodejs6.10" : "python3.6"
+            return base.js ? "nodejs8.10" : "python3.6"
         }
     }
 }

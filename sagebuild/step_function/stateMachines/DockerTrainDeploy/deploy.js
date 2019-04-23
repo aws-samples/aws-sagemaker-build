@@ -83,7 +83,7 @@ module.exports=Object.assign(
         Choices:[{
             Variable:`$.status.deployment`,
             BooleanEquals:true,
-            Next:`Success` 
+            Next:`IfPostProcess` 
         },{
             Variable:`$.status.deployment`,
             BooleanEquals:false,
