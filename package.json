@@ -1,17 +1,17 @@
 {
   "name": "sagebuild",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "up": "cd ./sagebuild && make && ./bin/upload.sh && node ./bin/launch.js",
-    "update": "cd ./sagebuild && make && ./bin/upload.sh && node ./bin/update.js",
-    "down": "node ./sagebuild/bin/delete.js",
-    "check": "node ./sagebuild/bin/check.js"
+    "update": "make && ./bin/upload.sh && ./templates/main/bin/update.js",
+    "up": "make && ./bin/upload.sh && ./templates/main/bin/launch.js",
+    "upload": "make && ./bin/upload.sh",
+    "down": "./templates/main/bin/delete.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/sagebuild"
+    "url": "https://github.com/aws-samples/aws-sagemaker-build"
   },
   "keywords": [],
   "author": "",
