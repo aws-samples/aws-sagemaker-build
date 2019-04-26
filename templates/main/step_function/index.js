@@ -11,13 +11,9 @@ var params=Object.assign(_.fromPairs(Object.keys(params)
     {
         "maxtrainingjobs":1,
         "configtrain":"SAGEMAKER",
-        "maxparalleltrainingjobs":1,
-        "checkpointbucket":"${CheckPointBucket}",
         "endpointname":"${Variables.EndpointName}",
         "stackname":"${AWS::StackName}",
-        "mxnetversion":"1.1",
-        "hyperparameters":"HyperParameters",
-        "tensorflowversion":"1.8",
+        "hyperparameters":"${Parameters}",
         "stackname":"${AWS::StackName}",
         "ecrrepo":"${ECRRepo}",
         "modelrole":"${ModelRole.Arn}",
@@ -31,26 +27,58 @@ var params=Object.assign(_.fromPairs(Object.keys(params)
         "projectname":"${ImageBuild}",
         "ETLStepFuction":"${ETLStepFuction}",
         "PostProcessStepFuction":"${PostProcessStepFuction}",
-        trainentrypoint:"none",
         hostinstancecount:"1",
         hostinstancetype:"ml.t2.medium",
         traininstancecount:"1",
         traininstancetype:"ml.m5.large",
-        trainsourcefile:"none",
-        pyversion:"py3",
         trainvolumesize:"10",
-        trainmaxrun:"4",
         inputmode:"File",
-        hostentrypoint:"none",
-        hostsourcefile:"none",
-        enablecloudwatchmetrics:"false",
-        containerloglevel:"200",
-        trainingsteps:"1000",
-        evaluationsteps:"100",
-        requirementsfile:"none",
-        hyperparameters:{},
-        modelhostingenvironment:{}
+        modelhostingenvironment:{},
+        trainmaxrun:"4",
+        "maxparalleltrainingjobs":1,
+        "checkpointbucket":"${CheckPointBucket}",
     })
+
+var FrameworkParams=Object.assign(params,{
+    enablecloudwatchmetrics:"false",
+    framework:"${ConfigFramework}",
+    containerloglevel:"200",
+    trainentrypoint:"none",
+    trainsourcefile:"none",
+    hostsourcefile:"none",
+    hostentrypoint:"none",
+    pyversion:"py3",
+})
+
+var MXNETParams=Object.assign(FrameworkParams,{
+    "frameworkversion":"1.1",
+})
+var TensorFlowParams=Object.assign(FrameworkParams,{
+    "frameworkversion":"1.8",
+})
+
+var SciKitParams=Object.assign(FrameworkParams,{
+    "frameworkversion":"0.20.0",
+})
+
+var ChainerParams=Object.assign(FrameworkParams,{
+    "frameworkversion":"4.1.0",
+})
+var PyTorchParams=Object.assign(FrameworkParams,{
+    "frameworkversion":"1.0.0",
+})
+var AmazonParams=Object.assign(params,{
+    algorithm:"xgboost"
+})
+
+var BYODParams=Object.assign(params,{
+    dockerfile_path_Training:"training/docker",
+    dockerfile_path_Inference:"inference/docker"
+})
+
+function insert(x){
+    return {"Fn::Sub":JSON.stringify(x).replace(/"HyperParameters"/,"${HyperParameters}")}
+}
 module.exports=Object.assign(
     require('./lambdas'),
     require('./stateMachines').StateMachine,
@@ -59,8 +87,35 @@ module.exports=Object.assign(
         "Type" : "AWS::SSM::Parameter",
         "Properties" : {
             "Type" :"String",
-            "Value" :{"Fn::Sub":JSON.stringify(params)
-                .replace(/"HyperParameters"/,"${HyperParameters}")}
+            "Value" :{"Fn::If":[
+                "ConfigFrameworkBYOD",
+                insert(BYODParams),
+                {"Fn::If":[
+                    "ConfigFrameworkMXNET",
+                    insert(MXNETParams),
+                    {"Fn::If":[
+                        "ConfigFrameworkTENSORFLOW",
+                        insert(TensorFlowParams),
+                        {"Fn::If":[
+                            "ConfigFrameworkAMAZON",
+                            insert(AmazonParams),
+                            {"Fn::If":[
+                                "ConfigFrameworkSCIKIT",
+                                insert(SciKitParams),
+                                {"Fn::If":[
+                                    "ConfigFrameworkCHAINER",
+                                    insert(ChainerParams),
+                                    {"Fn::If":[
+                                        "ConfigFrameworkPYTORCH",
+                                        insert(PyTorchParams),
+                                        insert(params)
+                                    ]}
+                                ]}
+                            ]}
+                        ]}
+                    ]}
+                ]}
+            ]}
         }
     },
     "ParameterStoreOverride":{

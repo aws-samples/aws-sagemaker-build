@@ -1,7 +1,7 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
 var sagemaker=new aws.SageMaker()
-var create_image_uri=require('CreateImageURI').tensorflow
+var create_image_uri=require('CreateImageURI').scikit
 var s3=new aws.S3()
 
 exports.handler=(event,context,callback)=>{
@@ -11,8 +11,8 @@ exports.handler=(event,context,callback)=>{
     }else{
         var ModelDataUrl=`${event.status.training.TrainingJobDefinition.OutputDataConfig.S3OutputPath}/${event.status.training.BestTrainingJob.TrainingJobName}/output/model.tar.gz`
     }
-       
-    var key= `versions/inference/v${event.params.version}.py`
+   
+    var key= `versions/inference/v${event.params.version}.tar.gz`
     s3.copyObject({
         CopySource:event.params.hostsourcefile.match(/s3:\/\/(.*)/)[1],
         Bucket:event.params.codebucket,

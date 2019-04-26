@@ -1,6 +1,7 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
 var sagemaker=new aws.SageMaker()
+var create_image_uri=require('CreateImageURI').mxnet
 var s3=new aws.S3()
 
 exports.handler=(event,context,callback)=>{
@@ -41,8 +42,3 @@ exports.handler=(event,context,callback)=>{
     .catch(x=>callback(new Error(x)))
 }
 
-function create_image_uri(params){
-    var account='520713654638'
-    var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-mxnet:${params.mxnetversion}-${instance}-${params.pyversion}`
-}

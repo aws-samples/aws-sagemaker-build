@@ -1,7 +1,7 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
-var create_image_uri=require('CreateImageURI').tensorflow
 var s3=new aws.S3()
+var create_image_uri=require('CreateImageURI').scikit
 
 exports.handler=function(event,context,callback){
     console.log(JSON.stringify(event,null,2))
@@ -20,12 +20,12 @@ exports.handler=function(event,context,callback){
             var Hyperparameters=Object.assign({
                 sagemaker_container_log_level:event.params.containerloglevel,
                 sagemaker_enable_cloudwatch_metrics:event.params.enablecloudwatchmetrics,
-                sagemaker_job_name:`"${event.params.name}-${event.params.id}"`,
+                sagemaker_job_name:`"${event.params.name}"`,
                 sagemaker_program:`"${event.params.trainentrypoint}"`,
                 sagemaker_region:`"${process.env.AWS_REGION}"`,
                 sagemaker_submit_directory:`"s3://${event.params.codebucket}/${key}"`,
                 checkpoint_path:`"s3://${event.params.checkpointbucket}/${event.params.name}-${event.params.id}/checkpoints"`,
-            },others)
+            }, others)
 
             Object.keys(Hyperparameters).forEach(x=>{
                 var value=Hyperparameters[x]
@@ -58,3 +58,5 @@ exports.handler=function(event,context,callback){
         callback(new Error(e))
     }
 }
+
+

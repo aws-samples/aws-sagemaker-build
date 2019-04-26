@@ -17,7 +17,20 @@ module.exports=Object.assign(
         Type:"Task",
         Resource:"${StepLambdaCreateModel.Arn}",
         ResultPath:"$.outputs.models",
-        Next:"getEndpointConfig"
+        Next:"IfDeployEndpoint"
+    },
+    "IfDeployEndpoint":{
+        Type:"Choice",
+        Choices:[{
+            Variable:`$.params.deployEndpoint`,
+            BooleanEquals:true,
+            Next:`getEndpointConfig` 
+        },{
+            Variable:`$.params.deployEndpoint`,
+            BooleanEquals:false,
+            Next:`IfPostProcess` 
+        }],
+        Default:`getTrainingConfig`
     },
     "getEndpointConfig":{
         Type:"Task",

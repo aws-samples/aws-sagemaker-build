@@ -25,9 +25,10 @@ exports.handler=(event,context,cb)=>{
 
             _.defaultsDeep(params,{
                 build:{
-                    Training:!params.TrainingImage,
-                    Inference:!params.InferenceImage
-                }
+                    Training:!params.TrainingImage && params.configframework==="BYOD",
+                    Inference:!params.InferenceImage && && params.configframework==="BYOD"
+                },
+                deployEndpoint:true
             })
             
             var name=`${params.stackname}-v${version}`
