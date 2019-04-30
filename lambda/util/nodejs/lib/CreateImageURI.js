@@ -1,3 +1,5 @@
+var _=require('lodash')
+
 exports.pytorch=function(params){
     var account='520713654638'
     var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
