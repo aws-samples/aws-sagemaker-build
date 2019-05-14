@@ -66,7 +66,7 @@ function lambda(name){
         },
         "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["AlexaLambdaRole","Arn"]},
-        "Runtime": "nodejs6.10",
+        "Runtime": "nodejs8.10",
         "Timeout": 60
       }
     }

@@ -24,7 +24,7 @@ function lambda(name){
         "MemorySize": 128,
         "Layers":[{"Ref":"UtilLambdaLayer"}],
         "Role": {"Fn::GetAtt": ["StepLambdaRole","Arn"]},
-        "Runtime": "nodejs6.10",
+        "Runtime": "nodejs8.10",
         "Timeout": 60
       }
     }

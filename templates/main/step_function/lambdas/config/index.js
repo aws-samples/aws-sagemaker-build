@@ -61,11 +61,11 @@ function getInfo(name){
         if(code[index]){
             return {"Fn::If":[
                 `ConfigFramework${code[index].type.toUpperCase()}`,
-                code[index].js ? "nodejs6.10" : "python3.6",
+                code[index].js ? "nodejs8.10" : "python3.6",
                 nextRuntime(++index)
             ]}
         }else{
-            return byod.js ? "nodejs6.10" : "python3.6"
+            return byod.js ? "nodejs8.10" : "python3.6"
         }
     }
 }

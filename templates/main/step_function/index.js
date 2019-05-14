@@ -13,8 +13,6 @@ var params=Object.assign(_.fromPairs(Object.keys(params)
         "configtrain":"SAGEMAKER",
         "endpointname":"${Variables.EndpointName}",
         "stackname":"${AWS::StackName}",
-        "hyperparameters":"${Parameters}",
-        "stackname":"${AWS::StackName}",
         "ecrrepo":"${ECRRepo}",
         "modelrole":"${ModelRole.Arn}",
         "trainingrole":"${TrainingRole.Arn}",

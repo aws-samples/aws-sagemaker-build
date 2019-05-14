@@ -34,19 +34,24 @@ function base(event,image,env={}){
         var ModelDataUrl=`${event.status.training.TrainingJobDefinition.OutputDataConfig.S3OutputPath}/${event.status.training.BestTrainingJob.TrainingJobName}/output/model.tar.gz`
     }
 
-    return {
+    out={
         ExecutionRoleArn:event.params.modelrole,
         ModelName:`${event.params.name}-${event.params.id}`,
-        PrimaryContainer:{
-            Image:image,
-            ModelDataUrl,
-            Environment:Object.assign(event.params.modelhostingenvironment || {},env)
-        },
-        Containers:_.get(event,"params.pipeline",[]),
         Tags:[{
             Key:"sagebuild:stack",
             Value:event.params.stackname
         }]
     }
+
+    if(params.pipeline){
+        out.PrimaryContainer={
+            Image:image,
+            ModelDataUrl,
+            Environment:Object.assign(event.params.modelhostingenvironment || {},env)
+        }
+    }else{
+        out.Containers=_.get(event,"params.pipeline",[])
+    }
+    return out
 }
 

@@ -47,6 +47,7 @@ exports.mxnet=function(params){
 
 exports.amazon=function(params){
     var algorithm=params.algorithm.toLowerCase()
+    console.log(algorithm,process.env.AWS_REGION)
     if(["ipinsights","knn","object2vec","kmeans","pca", "factorization-machines","linear-learner", "ntm", "randomcutforest"].includes(algorithm)){
         var account={
             "us-west-2":"174872318107",
@@ -116,6 +117,8 @@ exports.amazon=function(params){
             "eu-west-1":"224300973850",
             "eu-west-2":"644912444149"
         }[process.env.AWS_REGION]
+    }else{
+        console.log("did not find account")
     }
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${algorithm}:1`
 }

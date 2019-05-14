@@ -1,5 +1,7 @@
 TEMPLATES=$(shell for l in $$(ls ./templates | grep -v util | grep -v README.md);do echo templates/$$l;done)
 
+EXAMPLES=$(shell for l in $$(ls ./examples | grep -v util | grep -v README.md);do echo examples/$$l;done)
+
 .PHONY: lambda templates upload website test bootstrap assets build
 
 All: assets templates lambda build 
@@ -9,6 +11,11 @@ build:
 
 lambda:  build
 	make -C ./lambda
+
+examples: $(EXAMPLES) build
+	for l in $(EXAMPLES); do	\
+		$(MAKE) -C $$l;			\
+	done;			
 
 templates: $(TEMPLATES) build
 	for l in $(TEMPLATES); do	\

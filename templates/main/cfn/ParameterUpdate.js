@@ -14,7 +14,7 @@ exports.handler=function(event,context,callback){
         }).promise()
         .then(function(result){
             console.log(JSON.stringify(result,null,2))
-            value=JSON.parse(result.Parameter.Value)
+            var value=JSON.parse(result.Parameter.Value)
             value=assign(value,JSON.parse(params.value))
             return ssm.putParameter({
                 Name:params.name,
