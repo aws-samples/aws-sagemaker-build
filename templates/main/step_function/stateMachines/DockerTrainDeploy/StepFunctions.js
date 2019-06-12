@@ -15,7 +15,7 @@ exports.step=function build(next,name){
         },
         "Start":{
             Type:"Task",
-            Resource:`\${StepLambdaStartExecution.Arn}`,
+            Resource:`\${StepLambdaStart${name}Execution.Arn}`,
             ResultPath:`$.outputs.${name}`,
             Next:`wait${name}`
         },
@@ -26,7 +26,7 @@ exports.step=function build(next,name){
         },
         "Status":{
             Type:"Task",
-            Resource:`\${StepLambdaCheckExecution.Arn}`,
+            Resource:`\${StepLambdaCheckExecution${name}.Arn}`,
             ResultPath:`$.status.${name}`,
             Next:`check${name}`
         },

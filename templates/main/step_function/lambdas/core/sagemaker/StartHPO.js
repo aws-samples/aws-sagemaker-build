@@ -1,5 +1,6 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
+var _=require('lodash')
 var crypto = require('crypto');
 var sagemaker=new aws.SageMaker()
 
@@ -81,10 +82,12 @@ exports.handler=(event,context,cb)=>{
             Tags:old_args.Tags
         }
         if(event.params.tuningobjective.Regex){
-            args.TrainingJobDefinition.AlgorithmSpecification.MetricDefinitions=[{
+            var defs=_.get(old_args,"AlgorithmSpecification.MetricDefinitions",[])
+            defs.push({
                 Name:event.params.tuningobjective.Name,
                 Regex:event.params.tuningobjective.Regex
-            }]
+            })
+            args.TrainingJobDefinition.AlgorithmSpecification.MetricDefinitions=defs
         }
         console.log(JSON.stringify(args,null,2))
         sagemaker.createHyperParameterTuningJob(args).promise()

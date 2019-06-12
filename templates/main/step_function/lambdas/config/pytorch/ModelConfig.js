@@ -1,4 +1,7 @@
 var config=require('ModelConfig').framework
+var aws=require('aws-sdk')
+aws.config.region=process.env.AWS_REGION 
+var s3=new aws.S3()
 
 exports.handler=function(event,context,callback){
     console.log(JSON.stringify(event,null,2))

@@ -135,22 +135,6 @@ module.exports=Object.assign(
             })
         }
     },
-    "ModelClear":{
-        "Type": "Custom::SageMakerModelClear",
-        "DependsOn":["CFNLambdaPolicy","EndpointConfigClear"],
-        "Properties": {
-            "ServiceToken": { "Fn::GetAtt" : ["SageMakerClearModelLambda", "Arn"] },
-            "name":{"Fn::Sub":"${AWS::StackName}"}
-        }
-    },
-    "EndpointConfigClear":{
-        "Type": "Custom::SageMakerEndpointConfigClear",
-        "DependsOn":["CFNLambdaPolicy","EndpointClear"],
-        "Properties": {
-            "ServiceToken": { "Fn::GetAtt" : ["SageMakerClearEndpointConfigLambda", "Arn"] },
-            "name":{"Fn::Sub":"${AWS::StackName}"}
-        }
-    },
     "EndpointClear":{
         "Type": "Custom::SageMakerEndpointClear",
         "DependsOn":["CFNLambdaPolicy"],
@@ -316,9 +300,11 @@ module.exports=Object.assign(
                         "s3:Get*",
                         "s3:PutObject",
                         "s3:Head*",
+                        "s3:ListBucket"
                     ],
                     "Resource": [
                         {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
+                        {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"},
                         {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
                         {"Fn::Sub":"arn:aws:s3:::${CodeBucket}"}

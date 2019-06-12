@@ -3,8 +3,7 @@ var _=require('lodash')
 
 exports.framework=function(event,name,key){
     var image=create_image_uri[name](event.params)
-    
-    var others=_.get(event.params.hyperparameters,{})
+    var others=_.get(event,"params.hyperparameters",{})
   
     others=_.mapValues(others,x=>`${JSON.stringify(x)}`)
     
@@ -46,7 +45,8 @@ function base(event,image,Hyperparameters={}){
     return {
       "AlgorithmSpecification": { 
         "TrainingImage":image, 
-        "TrainingInputMode":event["params"]["inputmode"]
+        "TrainingInputMode":event["params"]["inputmode"],
+        MetricDefinitions:_.get(event,"params.metrics",[])
       },
       "InputDataConfig": [ 
         {
@@ -54,7 +54,7 @@ function base(event,image,Hyperparameters={}){
           "DataSource": { 
             "S3DataSource": { 
               "S3DataType": "S3Prefix", 
-              "S3Uri":`s3://${event['params']['databucket']}/train/`, 
+              "S3Uri":event.params.uri || `s3://${event['params']['databucket']}/train/`, 
               "S3DataDistributionType": "FullyReplicated" 
             }
           },

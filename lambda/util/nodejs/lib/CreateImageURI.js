@@ -120,5 +120,5 @@ exports.amazon=function(params){
     }else{
         console.log("did not find account")
     }
-    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${algorithm}:1`
+    return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${algorithm}:latest`
 }

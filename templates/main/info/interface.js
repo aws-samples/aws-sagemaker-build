@@ -10,7 +10,7 @@ module.exports={
         "Parameters":["BranchBuildTrigger","ExternalCodeCommitRepo","ExternalGithubRepo","ExternalCodeBucket"]
     },{
         "Label":{"default":"Notebook Instance  Configuration"},
-        "Parameters":["Type","NoteBookInstanceType"]
+        "Parameters":["NoteBookInstanceType"]
     },{
         "Label":{"default":"Lambda and Step Function Hook Configuration"},
         "Parameters":["EndpointConfigLambda","TrainingConfigLambda","ModelConfigLambda","ETLStepFuction","PostProcessStepFuction"]

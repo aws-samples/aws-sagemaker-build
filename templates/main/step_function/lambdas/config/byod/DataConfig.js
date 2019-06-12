@@ -7,13 +7,13 @@ exports.handler=function(event,context,callback){
     try{
         var channels=event.params.channels
         var out=Object.keys(channels).map(function(key){
-            channel=channels[key]
+            var channel=channels[key]
             var out=Object.assign({
               "ChannelName":key, 
               "DataSource": { 
                 "S3DataSource": Object.assign({ 
                   "S3DataType": channel.type || "S3Prefix", 
-                  "S3Uri":`s3://${event.params.databucket}/${channel.path}`, 
+                  "S3Uri":channel.uri || `s3://${event.params.databucket}/${channel.path}`, 
                   "S3DataDistributionType": channel.dist ? "ShardedByS3Key"  : "FullyReplicated",
                 },_.pick(channel,["AttributeNames"]))
               },

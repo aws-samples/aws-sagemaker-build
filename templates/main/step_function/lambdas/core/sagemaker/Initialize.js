@@ -32,7 +32,7 @@ exports.handler=(event,context,cb)=>{
             })
             
             var name=`${params.stackname}-v${version}`
-            
+           
             Object.assign(event,params,{
                 timestamp:new Date(),
                 version,
@@ -41,7 +41,7 @@ exports.handler=(event,context,cb)=>{
                 TrainingTag:`${name}-Training`,
                 InferenceTag:`${name}-Inference`
             })
-
+            event.model=`${name}-${event.id}`
             cb(null,{
                 params:event,
                 args:{

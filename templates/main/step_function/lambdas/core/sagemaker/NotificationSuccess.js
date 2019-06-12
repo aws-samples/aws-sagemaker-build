@@ -29,7 +29,7 @@ exports.handler=(event,context,cb)=>{
             Value:JSON.stringify({
                 version_number:event.params.version,
                 model_name:`${event.params.name}-${event.params.id}`
-            })
+            }),
             Overwrite:true
         }).promise()
     ])

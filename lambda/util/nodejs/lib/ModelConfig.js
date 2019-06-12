@@ -1,6 +1,7 @@
 var create_image_uri=require('CreateImageURI')
 var _=require('lodash')
 
+
 exports.byod=function(event){
     var image=event.params.InferenceImage || `${event.params.accountid}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${event.params.ecrrepo}:Inference_v${event.params.version}`
     return base(event,image)
@@ -36,22 +37,37 @@ function base(event,image,env={}){
 
     out={
         ExecutionRoleArn:event.params.modelrole,
-        ModelName:`${event.params.name}-${event.params.id}`,
+        ModelName:event.params.model,
         Tags:[{
             Key:"sagebuild:stack",
             Value:event.params.stackname
         }]
     }
 
-    if(params.pipeline){
+    if(event.params.pipeline){
+        containers=_.get(event,"params.pipeline",[])
+            .map(x=>{return {
+                Image:x.tag ? ecr_image(event,x.tag) : x.image,
+                Environment:Object.assign(event.params.modelhostingenvironment || {},env)
+            }})
+            
+        containers.push({
+            Image:image,
+            ModelDataUrl,
+            Environment:Object.assign(event.params.modelhostingenvironment || {},env)
+        })
+        out.Containers=containers
+    }else{
         out.PrimaryContainer={
             Image:image,
             ModelDataUrl,
             Environment:Object.assign(event.params.modelhostingenvironment || {},env)
         }
-    }else{
-        out.Containers=_.get(event,"params.pipeline",[])
     }
     return out
 }
 
+function ecr_image(event,tag){
+    return event.params.InferenceImage || `${event.params.accountid}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${event.params.ecrrepo}:${tag}`
+
+}

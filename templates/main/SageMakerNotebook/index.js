@@ -7,7 +7,7 @@ module.exports={
         "Type": "AWS::SageMaker::NotebookInstance",
         Condition:"NoteBookInstance",
         "Properties": {
-            InstanceType:"ml.t2.medium",
+            InstanceType:{"Ref":"NoteBookInstanceType"},
             NotebookInstanceName:{"Fn::GetAtt":["Notebook","Name"]},
             RoleArn:{"Fn::GetAtt":["InternalNotebookRole","Arn"]},
             LifecycleConfigName:{"Fn::GetAtt":["SageMakerNotebookLifecycle","NotebookInstanceLifecycleConfigName"]}
