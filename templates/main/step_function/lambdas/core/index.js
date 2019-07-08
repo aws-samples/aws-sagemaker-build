@@ -1,4 +1,5 @@
 var fs=require('fs')
+var UglifyJS = require("uglify-es");
 var _=require('lodash')
 
 var configs=fs.readdirSync(__dirname)
@@ -44,6 +45,8 @@ function getInfo(name){
     var code=types.map(type=>{
         try{
             var txt=fs.readFileSync(__dirname+`/${type}/${name}.js`,'utf-8')
+            var result = UglifyJS.minify(txt,{mangle:false});
+            var txt=result.code
             var js=true
         }catch(e){
             var txt=fs.readFileSync(__dirname+`/${type}/${name}.py`,'utf-8')

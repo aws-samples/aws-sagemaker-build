@@ -1,4 +1,5 @@
 var create_image_uri=require('CreateImageURI')
+var crypto = require('crypto');
 var _=require('lodash')
 
 exports.framework=function(event,name,key){
@@ -42,6 +43,10 @@ exports.byod=function(event){
 }
 
 function base(event,image,Hyperparameters={}){
+    var name=`${event.params.name}-${event.params.id}`
+    if(name.length>63){
+        name= crypto.createHash('md5').update(name).digest('hex').slice(0,60);
+    }
     return {
       "AlgorithmSpecification": { 
         "TrainingImage":image, 
@@ -74,8 +79,8 @@ function base(event,image,Hyperparameters={}){
       "StoppingCondition": { 
         "MaxRuntimeInSeconds":parseInt(event["params"]["trainmaxrun"])*60*60
       },
-      "TrainingJobName":`${event.params.name}-${event.params.id}`, 
+      "TrainingJobName":name, 
       "HyperParameters":Hyperparameters,
-      "Tags": []
+      "Tags": event.params.Tags || []
     }
 }

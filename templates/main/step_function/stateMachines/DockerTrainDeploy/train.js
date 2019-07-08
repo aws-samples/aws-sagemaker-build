@@ -38,7 +38,7 @@ module.exports=Object.assign(
     "getDataConfig":{
         Type:"Task",
         Resource:"${StepLambdaGetDataConfig.Arn}",
-        ResultPath:'$.args.training.InputDataConfig',
+        ResultPath:'$.args.training',
         Next:"IfBuildTraining"
     },
     "IfHPO":{

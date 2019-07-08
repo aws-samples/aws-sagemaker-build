@@ -1,6 +1,7 @@
 var aws=require('aws-sdk')
 aws.config.region=process.env.AWS_REGION 
 var codebuild=new aws.CodeBuild()
+var crypto = require('crypto');
 var ssm=new aws.SSM()
 var _=require('lodash')
 
@@ -42,6 +43,9 @@ exports.handler=(event,context,cb)=>{
                 InferenceTag:`${name}-Inference`
             })
             event.model=`${name}-${event.id}`
+            if(event.model.length>63){
+                event.model= crypto.createHash('md5').update(event.model).digest('hex').slice(0,60);
+            }
             cb(null,{
                 params:event,
                 args:{

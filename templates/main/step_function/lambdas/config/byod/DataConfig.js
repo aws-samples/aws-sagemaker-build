@@ -28,8 +28,12 @@ exports.handler=function(event,context,callback){
             }
             return out
         })
-        
-        callback(null,out)
+        if(out.length){
+            event.args.training.InputDataConfig=out
+        }else{
+            delete event.args.training.InputDataConfig
+        }
+        callback(null,event.args.training)
     }catch(e){
         console.log(e)
         callback(new Error(e))

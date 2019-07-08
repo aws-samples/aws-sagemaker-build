@@ -89,6 +89,15 @@ exports.handler=(event,context,cb)=>{
             })
             args.TrainingJobDefinition.AlgorithmSpecification.MetricDefinitions=defs
         }
+
+        if(event.params.parentJobs && event.params.parentJobs.length>0){
+            args.WarmStartConfig={
+                ParentHyperParameterTuningJobs:event.params.parentJobs.map(
+                    x=>{return{HyperParameterTuningJobName:x}}
+                ),
+                WarmStartType:event.params.WarmStartType || "IdenticalDataAndAlgorithm"
+            }
+        }
         console.log(JSON.stringify(args,null,2))
         sagemaker.createHyperParameterTuningJob(args).promise()
         .then(result=>cb(null,result))
