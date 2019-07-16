@@ -3,7 +3,7 @@ var _=require('lodash')
 var build=require('./build').build
 var train=require('./train')
 var deploy=require('./deploy')
-var step=require('./stepfunctions').step
+var step=require('./StepFunctions').step
 
 states={
     "Comment": "",

@@ -46,6 +46,7 @@ exports.handler=(event,context,cb)=>{
             if(event.model.length>63){
                 event.model= crypto.createHash('md5').update(event.model).digest('hex').slice(0,60);
             }
+            event.endpoint_config=event.model
             cb(null,{
                 params:event,
                 args:{
