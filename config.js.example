@@ -7,8 +7,6 @@ module.exports={
     "templatePrefix":"artifacts/blog",
     "namespace":"test",
     "parameters":{
-        "AssetBucket":"sagebuild",
-        "AssetPrefix":"artifacts/blog",
         ConfigFramework:"TENSORFLOW"
     }
 }
