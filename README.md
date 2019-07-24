@@ -17,12 +17,14 @@ npm install
 ```
 1. copy config.js.example to config.js
 
-1. create an s3 bucket. [instructions](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-get-location-example.html). open up config.js and set templateBucket  and AssetBucket to the name of your s3 bucket.
+1. create an s3 bucket with versioning enabled. [instructions](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-get-location-example.html). open up config.js and set templateBucket  and AssetBucket to the name of your s3 bucket.
 
 1. launch stack
 ```shell
 npm run up
 ```
+1. open the SageMaker notebook instance created by the stack and use one of the example jupyter notebooks to configure and deploy a model
+
 
 ## Stack Management
 ```shell
