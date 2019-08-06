@@ -154,7 +154,18 @@ module.exports=Object.assign(
         "Properties" : {
             VersioningConfiguration:{
                 Status:"Enabled"
-            }
+            },
+            BucketEncryption:{"Fn::If":["Encryption",
+                {
+                    ServerSideEncryptionConfiguration:[{
+                        ServerSideEncryptionByDefault:{
+                            KMSMasterKeyID:{"Ref":"KMSKeyId"},
+                            SSEAlgorithm:"aws:kms"
+                        }
+                    }]
+                },
+                {"Ref":"AWS::NoValue"}
+            ]}
         }
     },
     "ArtifactClear":{
@@ -167,7 +178,20 @@ module.exports=Object.assign(
     },
     "DataBucket":{
         "Type" : "AWS::S3::Bucket",
-        Condition:"CreateDataBucket"
+        Condition:"CreateDataBucket",
+        "Properties":{
+            BucketEncryption:{"Fn::If":["Encryption",
+                {
+                    ServerSideEncryptionConfiguration:[{
+                        ServerSideEncryptionByDefault:{
+                            KMSMasterKeyID:{"Ref":"KMSKeyId"},
+                            SSEAlgorithm:"aws:kms"
+                        }
+                    }]
+                },
+                {"Ref":"AWS::NoValue"}
+            ]}
+        }
     },
     "DataClear":{
         "Type": "Custom::S3Clear",
@@ -180,7 +204,19 @@ module.exports=Object.assign(
     },
     "CheckPointBucket":{
         "Type" : "AWS::S3::Bucket",
-        "Properties" : {}
+        "Properties" : {
+            BucketEncryption:{"Fn::If":["Encryption",
+                {
+                    ServerSideEncryptionConfiguration:[{
+                        ServerSideEncryptionByDefault:{
+                            KMSMasterKeyID:{"Ref":"KMSKeyId"},
+                            SSEAlgorithm:"aws:kms"
+                        }
+                    }]
+                },
+                {"Ref":"AWS::NoValue"}
+            ]}
+        }
     },
     "CheckPointClear":{
         "Type": "Custom::S3Clear",
@@ -192,7 +228,19 @@ module.exports=Object.assign(
     },
     "CodeBucket":{
         "Type" : "AWS::S3::Bucket",
-        "Properties" : {}
+        "Properties" : {
+            BucketEncryption:{"Fn::If":["Encryption",
+                {
+                    ServerSideEncryptionConfiguration:[{
+                        ServerSideEncryptionByDefault:{
+                            KMSMasterKeyID:{"Ref":"KMSKeyId"},
+                            SSEAlgorithm:"aws:kms"
+                        }
+                    }]
+                },
+                {"Ref":"AWS::NoValue"}
+            ]}
+        }
     },
     "CodeClear":{
         "Type": "Custom::S3Clear",
@@ -340,7 +388,24 @@ module.exports=Object.assign(
 						"iam:PassedToService": "sagemaker.amazonaws.com"
 					}
 				}
-            }]
+            },{"Fn::If":["Encryption",
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "kms:DescribeKey",
+                        "kms:CreateGrant",
+                        "kms:Encrypt",
+                        "kms:Decrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*",
+                    ],
+                    "Resource": [
+                        {"Fn::Sub":"arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/${KMSKeyId}"}
+                    ]
+                }
+                ,
+                {"Ref":"AWS::NoValue"}
+            ]}]
         }
       }]                
     }},
@@ -432,9 +497,25 @@ module.exports=Object.assign(
                     "Resource": [
                         {"Fn::Sub":"arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ECRRepo}"},
                     ]
-              }]
-            }
-        }]
+                },
+                {"Fn::If":["Encryption",
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "kms:DescribeKey",
+                            "kms:CreateGrant",
+                            "kms:Encrypt",
+                            "kms:Decrypt",
+                            "kms:ReEncrypt*",
+                            "kms:GenerateDataKey*",
+                        ],
+                        "Resource": [
+                            {"Fn::Sub":"arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/${KMSKeyId}"}
+                        ]
+                    },
+                    {"Ref":"AWS::NoValue"}
+                ]}]
+        }}]
       }                
     },
     StepFunctionRole:{

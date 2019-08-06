@@ -23,6 +23,7 @@ function lambda(name){
             "Variables":{
                 "PARAMETERSTORE":{"Ref":"ParameterStore"},
                 "VERSIONPARAMETERSTORE":{"Ref":"VersionParameterStore"},
+                "KMSKEYID":{"Ref":"KMSKeyId"} 
             }
         },
         "Code": {

@@ -73,7 +73,20 @@ module.exports=Object.assign(
                            {"Fn::GetAtt":["CodeBucket","Arn"]},
                            {"Fn::Sub":"${CodeBucket.Arn}/*"}
                         ]
-                  }]
+                  },{"Fn::If":["Encryption",
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "kms:DescribeKey",
+                                "kms:CreateGrant"
+                            ],
+                            "Resource": [
+                                {"Fn::Sub":"arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/${KMSKeyId}"}
+                            ]
+                        }
+                        ,
+                        {"Ref":"AWS::NoValue"}
+                    ]}]
                 }
             }]
           }

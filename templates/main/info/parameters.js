@@ -121,5 +121,10 @@ module.exports={
         "Type":"String",
         "Default":"EMPTY",
         "Description":"(Optional) AWS Stepfunction to run after deployment"
+    },
+    "KMSKeyId":{
+        "Type":"String",
+        "Default":"EMPTY",
+        "Description":"(Optional) AWS Key Management Service Key to encrypt EBS volumnes and models"
     }
 }

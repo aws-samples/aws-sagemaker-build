@@ -47,7 +47,7 @@ function base(event,image,Hyperparameters={}){
     if(name.length>63){
         name= crypto.createHash('md5').update(name).digest('hex').slice(0,60);
     }
-    return {
+    var out={
       "AlgorithmSpecification": { 
         "TrainingImage":image, 
         "TrainingInputMode":event["params"]["inputmode"],
@@ -83,4 +83,8 @@ function base(event,image,Hyperparameters={}){
       "HyperParameters":Hyperparameters,
       "Tags": event.params.Tags || []
     }
+    if(process.env.KMSKEYID!=="EMPTY"){
+        out.ResourceConfig.VolumeKmsKeyId=process.env.KMSKEYID
+    }
+    return out
 }

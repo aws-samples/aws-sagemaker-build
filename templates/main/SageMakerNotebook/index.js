@@ -123,7 +123,24 @@ module.exports={
               "Effect": "Allow",
               "Action": ["logs:*"],
               "Resource":["*"]
-          }]
+          },{"Fn::If":["Encryption",
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "kms:DescribeKey",
+                        "kms:CreateGrant",
+                        "kms:Encrypt",
+                        "kms:Decrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*",
+                    ],
+                    "Resource": [
+                        {"Fn::Sub":"arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/${KMSKeyId}"}
+                    ]
+                }
+                ,
+                {"Ref":"AWS::NoValue"}
+            ]}]
         }
       }
     }

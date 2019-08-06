@@ -42,6 +42,7 @@ module.exports={
     "UseCodeBucket":notEmpty("ExternalCodeBucket"),
     "IsCodeCommitRepo":equal("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
     "SubscribeToExternalTopic":notEqual("ExternalLaunchTopic","EMPTY"),
+    "Encryption":notEqual("KMSKeyId","EMPTY"),
     "InvalidConfiguration":{"Fn::And":[
         notEqual("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
         notEqual("ExternalCodeCommitRepo","CREATE_REPO")

@@ -1,7 +1,7 @@
 module.exports={
     "ParameterGroups":[{
         "Label":{"default":"General Parameters"},
-        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters"]
+        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters","KMSKeyId"]
     },{
         "Label":{"default":"Data Bucket Configuration"},
         "Parameters":["ExternalDataBucket","ExternalLaunchTopic","BucketTriggerBuild"]
@@ -16,6 +16,7 @@ module.exports={
         "Parameters":["EndpointConfigLambda","TrainingConfigLambda","ModelConfigLambda","ETLStepFuction","PostProcessStepFuction"]
     }],
     "ParameterLabels":{
+        "KMSKeyId":{"default":"AWS KMS Key Id"},
         "BucketTriggerBuild":{"default":"Data Bucket Trigger"},
         "ExternalTrainingPolicy":{"default":"Additional Training IAM Policy"},
         "ExternalHostingPolicy":{"default":"Additional Hosting IAM Policy"},

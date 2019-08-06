@@ -15,7 +15,9 @@ function lambda(name){
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Environment":{
-            "Variables":{}
+            "Variables":{
+                "KMSKEYID":{"Ref":"KMSKeyId"} 
+            }
         },
         "Code": {
             "ZipFile":info.code
