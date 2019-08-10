@@ -108,6 +108,10 @@ module.exports=Object.assign(
             Variable:`$.status.training.TrainingJobStatus`,
             StringEquals:"Completed",
             Next:`getModelConfig` 
+        },{
+            Variable:`$.status.training.TrainingJobStatus`,
+            StringEquals:"Stopped",
+            Next:`getModelConfig` 
         }],
         Default:`trainingFail`
     },
