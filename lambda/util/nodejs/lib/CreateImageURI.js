@@ -6,7 +6,7 @@ exports.pytorch=function(params){
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-pytorch:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
 
-exports.scikit=function(params){
+exports.chainer=function(params){
     var account={
             "us-east-1":"746614075791",
             "us-west-2":"246618743249",
@@ -28,7 +28,22 @@ exports.scikit=function(params){
 }
 
 exports.scikit=function(params){
-    var account='683313688378'
+    var account={
+            "us-east-1":"746614075791",
+            "us-west-2":"246618743249",
+            "eu-west-1":"683313688378",
+            "us-east-2":"257758044811",
+            "us-gov-west-1":"414596584902",
+            "ap-northeast-1":"354813040037",
+            "ap-northeast-2":"366743142698",
+            "ap-south-1":"720646828776",
+            "ap-southeast-1":"121021644041",
+            "ap-southeast-2":"783357654285",
+            "ca-central-1":"341280168497",
+            "eu-central-1":"492215442770",
+            "eu-west-1":"141502667606",
+            "eu-west-2":"764974769150"
+        }[process.env.AWS_REGION]
     var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-scikit-learn:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
