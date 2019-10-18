@@ -12,6 +12,11 @@ var deployConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/core/`)
     .map(x=>x.toUpperCase())
 
 module.exports={
+    UseSpotInstances:{
+        "Type":"String",
+        "Default":"FALSE",
+        "Description":"Use sagemaker spot instances for training"
+    },
     Parameters:{
         "Type":"String",
         "Default":"{}",

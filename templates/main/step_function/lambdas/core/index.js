@@ -23,6 +23,11 @@ function lambda(name){
             "Variables":{
                 "PARAMETERSTORE":{"Ref":"ParameterStore"},
                 "VERSIONPARAMETERSTORE":{"Ref":"VersionParameterStore"},
+                "USESPOT":{"Fn::If":[
+                    "UseSpotInstanceTrue",
+                    "True",
+                    "False"
+                ]}
             }
         },
         "Code": {

@@ -45,7 +45,8 @@ module.exports={
     "InvalidConfiguration":{"Fn::And":[
         notEqual("ExternalGithubRepo","USE_CODECOMMIT_REPO"),
         notEqual("ExternalCodeCommitRepo","CREATE_REPO")
-    ]}
+    ]},
+    "UseSpotInstanceTrue":equal("UseSpotInstances","TRUE")
   }),
   "Outputs":require('./info/outputs'),
   "Resources":Object.assign(

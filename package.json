@@ -17,13 +17,15 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.188.0",
-    "bluebird": "^3.5.1",
     "cfn-response": "^1.0.1",
-    "chalk": "^2.3.1",
-    "lodash": "^4.17.10",
     "ora": "^1.4.0",
-    "recursive-readdir-synchronous": "0.0.4",
+    "recursive-readdir-synchronous": "0.0.4"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.548.0",
+    "bluebird": "^3.7.0",
+    "chalk": "^2.4.2",
+    "lodash": "^4.17.15",
     "uglify-es": "github:mishoo/UglifyJS2#harmony"
   }
 }

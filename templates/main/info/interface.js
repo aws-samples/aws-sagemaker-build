@@ -1,7 +1,7 @@
 module.exports={
     "ParameterGroups":[{
         "Label":{"default":"General Parameters"},
-        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters"]
+        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters","UseSpotInstance"]
     },{
         "Label":{"default":"Data Bucket Configuration"},
         "Parameters":["ExternalDataBucket","ExternalLaunchTopic","BucketTriggerBuild"]
