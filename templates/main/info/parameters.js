@@ -18,9 +18,15 @@ module.exports={
         "Description":"Creates a VPC to attach training jobs with all need support resources",
         "Default":"NoVPC"
     },
+    VPCID:{
+        "Type":"String",
+        "Description":"External VPC to use",
+        "Default":"EMPTY"
+    },
     VPCSubnets:{
         "Type":"CommaDelimitedList",
-        "Description":"If using external VPC the subnets to use for training"
+        "Description":"If using external VPC, the subnets to use for training",
+        "Default":"False,False"
     },
     UseSpotInstances:{
         "Type":"String",

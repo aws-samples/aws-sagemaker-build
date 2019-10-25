@@ -100,7 +100,7 @@ module.exports={
                 {"Ref":"InternalVPC"},
                 {"Fn::If":[
                     "ExternalVPC",
-                    "External VPC",
+                    {"Ref":"VPCID"},
                     "NoVPC" 
                 ]}
             ]},
