@@ -34,6 +34,9 @@ module.exports={
     "ExternalModelConfigLambda":notEmpty("ModelConfigLambda"),
     "NoteBookInstance":notEqual("NoteBookInstanceType","NONE"),
     "CreateDataBucket":equal("ExternalDataBucket","CREATE_BUCKET"),
+    "CreateVPC":equal("VPCConfiguration","CreateVPC"),
+    "ExternalVPC":equal("VPCConfiguration","ExternalVPC"),
+    "UseVPC":notEqual("VPCConfiguration","NoVPC"),
     "CreateRepo":{"Fn::And":[
         equal("ExternalCodeCommitRepo","CREATE_REPO"),
         equal("ExternalGithubRepo","USE_CODECOMMIT_REPO")
@@ -92,6 +95,15 @@ module.exports={
         "Type": "Custom::Variables",
         "Properties": {
             "ServiceToken": { "Fn::GetAtt" : ["VariableLambda", "Arn"] },
+            "VPC":{"Fn::If":[
+                "CreateVPC",
+                {"Ref":"InternalVPC"},
+                {"Fn::If":[
+                    "ExternalVPC",
+                    "External VPC",
+                    "NoVPC" 
+                ]}
+            ]},
             "EndpointName":{
                 "op":"toLowerCase",
                 "value":{"Ref":"AWS::StackName"}
@@ -132,7 +144,8 @@ module.exports={
     require('./dashboard'),
     require('./SageMakerNotebook'),
     require('./alexa'),
-    require('./lambda')
+    require('./lambda'),
+    require('./vpc')
   ),
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Automates the building and deployment of SageMaker custom models using StepFunctions and CodeBuild",

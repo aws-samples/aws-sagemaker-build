@@ -1,7 +1,7 @@
 module.exports={
     "ParameterGroups":[{
         "Label":{"default":"General Parameters"},
-        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters","UseSpotInstance"]
+        "Parameters":["ExternalTrainingPolicy","ExternalHostingPolicy","ConfigFramework","ConfigDeploy","Type","Parameters","UseSpotInstance","VPCConfiguration"]
     },{
         "Label":{"default":"Data Bucket Configuration"},
         "Parameters":["ExternalDataBucket","ExternalLaunchTopic","BucketTriggerBuild"]
@@ -32,7 +32,8 @@ module.exports={
         "ExternalLaunchTopic":{"default":"Additional SNS Launch Topic"},
         "Type":{"default":"Type of Pipeline"},
         "ETLStepFuction":{"default":"ETL StepFunction"},
-        "PostProcessStepFuction":{"default":"Post deployment StepFunction"}
+        "PostProcessStepFuction":{"default":"Post deployment StepFunction"},
+        "VPC":{"default":"VPC Support"}
     }
 }
 

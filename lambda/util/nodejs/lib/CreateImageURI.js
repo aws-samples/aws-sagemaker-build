@@ -1,12 +1,12 @@
 var _=require('lodash')
-
-exports.pytorch=function(params,Training=true){
+var _exports={}
+_exports.pytorch=function(params,Training=true){
     var account='520713654638'
     var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-pytorch:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
 
-exports.scikit=function(params,Training=true){
+_exports.scikit=function(params,Training=true){
     var account={
             "us-east-1":"746614075791",
             "us-west-2":"246618743249",
@@ -27,19 +27,19 @@ exports.scikit=function(params,Training=true){
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-chainer:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
 
-exports.scikit=function(params,Training=true){
+_exports.scikit=function(params,Training=true){
     var account='683313688378'
     var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-scikit-learn:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
 
-exports.tensorflow=function(params,Training=true){
+_exports.tensorflow=function(params,Training=true){
     var account='520713654638'
     var instance=params.traininstancetype.split('.')[1][0]==="p" ? "gpu" : "cpu"
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/sagemaker-tensorflow:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
 
-exports.mxnet=function(params,Training=true){
+_exports.mxnet=function(params,Training=true){
     if(process.env.AWS_REGION==="ap-east-1"){
         var account='057415533634'
     }else{
@@ -54,7 +54,7 @@ exports.mxnet=function(params,Training=true){
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${type}:${params.frameworkversion}-${instance}-${params.pyversion}`
 }
 
-exports.amazon=function(params,Training=true){
+_exports.amazon=function(params,Training=true){
     var algorithm=params.algorithm.toLowerCase()
     console.log(algorithm,process.env.AWS_REGION)
     if(["ipinsights","knn","object2vec","kmeans","pca", "factorization-machines","linear-learner", "ntm", "randomcutforest"].includes(algorithm)){
@@ -131,3 +131,30 @@ exports.amazon=function(params,Training=true){
     }
     return `${account}.dkr.ecr.${process.env.AWS_REGION}.amazonaws.com/${algorithm}:latest`
 }
+
+function decorator(fnc){
+    var out=function(params,Training=true){
+        if(Training){
+            if(params.TrainingImage){
+                return params.TrainingImage
+            }else{
+                return fnc(params,Training)
+            }
+        }else{
+            if(params.InferenceImage){
+                return params.InferenceImage
+            }else{
+                return fnc(params,Training)
+            }
+        }
+    }
+    return out
+}
+console.log(_.fromPairs(_.toPairs(_exports).map(x=>{
+    return [x[0],decorator(x[1])]
+})))
+module.exports=_.fromPairs(_.toPairs(_exports).map(x=>{
+    return [x[0],decorator(x[1])]
+}))
+
+

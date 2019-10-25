@@ -18,7 +18,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cfn-response": "^1.0.1",
-    "ora": "^1.4.0",
     "recursive-readdir-synchronous": "0.0.4"
   },
   "devDependencies": {
@@ -26,6 +25,7 @@
     "bluebird": "^3.7.0",
     "chalk": "^2.4.2",
     "lodash": "^4.17.15",
+    "ora": "^1.4.0",
     "uglify-es": "github:mishoo/UglifyJS2#harmony"
   }
 }

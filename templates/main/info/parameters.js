@@ -12,6 +12,16 @@ var deployConfigs=fs.readdirSync(`${__dirname}/../step_function/lambdas/core/`)
     .map(x=>x.toUpperCase())
 
 module.exports={
+    VPCConfiguration:{
+        "Type":"String",
+        "AllowedValues":["NoVPC","CreateVPC","ExternalVPC"],
+        "Description":"Creates a VPC to attach training jobs with all need support resources",
+        "Default":"NoVPC"
+    },
+    VPCSubnets:{
+        "Type":"CommaDelimitedList",
+        "Description":"If using external VPC the subnets to use for training"
+    },
     UseSpotInstances:{
         "Type":"String",
         "Default":"FALSE",

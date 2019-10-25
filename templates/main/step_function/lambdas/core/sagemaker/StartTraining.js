@@ -14,6 +14,12 @@ exports.handler=(event,context,cb)=>{
         event.args.training.EnableManagedSpotTraining=true
         event.args.training.StoppingCondition.MaxWaitTimeInSeconds=event.args.training.StoppingCondition.MaxRuntimeInSeconds+(60*60)
     }
+    if(process.env.VPC!=="NoVPC"){
+        event.args.training.VpcConfig={
+            Subnets:[process.env.SUBNET1,process.env.SUBNET2],
+            SecurityGroupIds:[process.env.SECURITYGROUP]
+        }
+    }
     sagemaker.createTrainingJob(event.args.training).promise()
     .then(result=>cb(null,result))
     .catch(x=>cb(new Error(x)))

@@ -101,6 +101,13 @@ exports.handler=(event,context,cb)=>{
             event.args.training.EnableManagedSpotTraining=true
             event.args.training.StoppingCondition.MaxWaitTimeInSeconds=event.args.training.StoppingCondition.MaxRuntimeInSeconds+(60*60)
         }
+        if(process.env.VPC!=="NoVPC"){
+            event.args.training.VpcConfig={
+                Subnets:[process.env.SUBNET1,process.env.SUBNET2],
+                SecurityGroupIds:[process.env.SECURITYGROUP]
+            }
+        }
+
         console.log(JSON.stringify(args,null,2))
         sagemaker.createHyperParameterTuningJob(args).promise()
         .then(result=>cb(null,result))

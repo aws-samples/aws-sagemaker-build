@@ -27,6 +27,30 @@ function lambda(name){
                     "UseSpotInstanceTrue",
                     "True",
                     "False"
+                ]},
+                "VPC":{"Fn::GetAtt":["Variables","VPC"]},
+                "SUBNET1":{"Fn::If":[
+                    "CreateVPC",
+                    {"Ref":"Subnet1"},
+                    {"Fn::If":[
+                        "ExternalVPC",
+                        {"Fn::Select":["0",{"Ref":"VPCSubnets"}]},
+                        "False"
+                    ]}
+                ]},
+                "SUBNET2":{"Fn::If":[
+                    "CreateVPC",
+                    {"Ref":"Subnet2"},
+                    {"Fn::If":[
+                        "ExternalVPC",
+                        {"Fn::Select":["1",{"Ref":"VPCSubnets"}]},
+                        "False"
+                    ]}
+                ]},
+                "SECURITYGROUP":{"Fn::If":[
+                    "UseVPC",
+                    {"Ref":"TrainingSecurityGroup"},
+                    "False"
                 ]}
             }
         },
