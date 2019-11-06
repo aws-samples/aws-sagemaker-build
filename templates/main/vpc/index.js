@@ -63,9 +63,13 @@ module.exports={
                 "Action":["s3:*"],
                 "Resource":[
                     {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}/*"},
+                    {"Fn::Sub":"arn:aws:s3:::${Variables.DataBucket}"},
                     {"Fn::Sub":"arn:aws:s3:::${AssetBucket}/*"},
+                    {"Fn::Sub":"arn:aws:s3:::${AssetBucket}"},
                     {"Fn::Sub":"arn:aws:s3:::${CodeBucket}/*"},
-                    {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"}
+                    {"Fn::Sub":"arn:aws:s3:::${CodeBucket}"},
+                    {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}/*"},
+                    {"Fn::Sub":"arn:aws:s3:::${ArtifactBucket}"}
                 ]
              }]
        },
