@@ -82,7 +82,15 @@ module.exports={
 	   "Type" : "AWS::EC2::SecurityGroup",
         Condition:"UseVPC",
 	   "Properties" : {
-		  "GroupDescription" : "Allow http to client host",
+		  "GroupDescription" : "Allow traffic between notebook instances",
+		  "VpcId" : {"Fn::GetAtt":["Variables","VPC"]},
+	   }
+	},
+    "InstanceSecurityGroup":{
+	   "Type" : "AWS::EC2::SecurityGroup",
+        Condition:"UseVPC",
+	   "Properties" : {
+		  "GroupDescription" : "Allow traffic to Notebook Instance",
 		  "VpcId" : {"Fn::GetAtt":["Variables","VPC"]},
 	   }
 	},
