@@ -8,12 +8,12 @@ exports.byod=function(event){
 }
 
 exports.amazon=function(event){
-    var image=create_image_uri.amazon(event.params)
+    var image=create_image_uri.amazon(event.params,false)
     return base(event,image)
 }
 
 exports.framework=function(event,name,key){
-    var image=create_image_uri[name](event.params)
+    var image=create_image_uri[name](event.params,false)
     var env={
         SAGEMAKER_CONTAINER_LOG_LEVEL:event.params.containerloglevel,
         SAGEMAKER_ENABLE_CLOUDWATCH_METRICS:event.params.enablecloudwatchmetrics,

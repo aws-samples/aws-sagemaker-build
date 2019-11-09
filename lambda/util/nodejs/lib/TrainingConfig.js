@@ -3,7 +3,7 @@ var crypto = require('crypto');
 var _=require('lodash')
 
 exports.framework=function(event,name,key){
-    var image=create_image_uri[name](event.params)
+    var image=create_image_uri[name](event.params,true)
     var others=_.get(event,"params.hyperparameters",{})
   
     others=_.mapValues(others,x=>`${JSON.stringify(x)}`)

@@ -10,7 +10,21 @@ module.exports={
             InstanceType:{"Ref":"NoteBookInstanceType"},
             NotebookInstanceName:{"Fn::GetAtt":["Notebook","Name"]},
             RoleArn:{"Fn::GetAtt":["InternalNotebookRole","Arn"]},
-            LifecycleConfigName:{"Fn::GetAtt":["SageMakerNotebookLifecycle","NotebookInstanceLifecycleConfigName"]}
+            LifecycleConfigName:{"Fn::GetAtt":["SageMakerNotebookLifecycle","NotebookInstanceLifecycleConfigName"]},
+            SecurityGroupIds:{"Fn::If":[
+                "UseVPC",
+                [{"Ref":"InstanceSecurityGroup"}],
+                {"Ref":"AWS::NoValue"}
+            ]},
+            SubnetId:{"Fn::If":[
+                "UseVPC",
+                {"Fn::If":[
+                    "CreateVPC",
+                    {"Ref":"Subnet1"},
+                    {"Fn::Select":["0",{"Ref":"VPCSubnets"}]},
+                ]},
+                {"Ref":"AWS::NoValue"}
+            ]}        
         }
     },
     "SageMakerNotebookLifecycle":{

@@ -5,5 +5,6 @@ module.exports=Object.assign(base,{
     parameters:{
         "AssetBucket":base.templateBucket,
         "AssetPrefix":base.templatePrefix,
+        "VPCConfiguration":"CreateVPC"
     }
 })

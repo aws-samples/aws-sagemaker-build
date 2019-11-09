@@ -1,4 +1,7 @@
 module.exports={
+    "VPC":{
+        "Value":{"Fn::GetAtt":["Variables","VPC"]}
+    },
     "CodeBucket":{
         "Value":{"Ref":"CodeBucket"}
     },
