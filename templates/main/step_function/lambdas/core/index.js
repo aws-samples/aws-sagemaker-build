@@ -72,11 +72,11 @@ function getInfo(name){
         if(code[index]){
             return {"Fn::If":[
                 `ConfigDeploy${code[index].type.toUpperCase()}`,
-                code[index].js ? "nodejs8.10" : "python3.6",
+                code[index].js ? "nodejs10.x" : "python3.6",
                 nextRuntime(++index)
             ]}
         }else{
-            return base.js ? "nodejs8.10" : "python3.6"
+            return base.js ? "nodejs10.x" : "python3.6"
         }
     }
 }

@@ -123,7 +123,7 @@ module.exports={
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["LaunchLambdaRole","Arn"]},
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 60
       }
     },
@@ -141,7 +141,7 @@ module.exports={
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["RollbackLambdaRole","Arn"]},
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 60
       }
     },
