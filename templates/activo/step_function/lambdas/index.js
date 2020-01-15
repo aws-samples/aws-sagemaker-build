@@ -82,7 +82,7 @@ function lambda(file,type,version=false){
         "Handler": "index.handler",
         "MemorySize": "1024",
         "Role": {"Fn::GetAtt": ["StepLambdaRole","Arn"]},
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Environment":{
             "Variables":{
             }

@@ -83,7 +83,7 @@ function lambda(name){
         "Handler": "index.handler",
         "MemorySize": 128,
         "Role": {"Fn::GetAtt": ["CFNLambdaRole","Arn"]},
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 60
       }
     }
